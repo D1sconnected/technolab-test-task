@@ -31,12 +31,14 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "FreeRTOS.h"
 #include "./../../User/Include/CircularBuffer.h"
+#include "./../../User/Include/CmdHandler.h"
+#include "./../../User/Include/StreamData.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -47,6 +49,7 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 extern CircularBuffer pCirBuf;
+extern dataStruct sharedStreamData;
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

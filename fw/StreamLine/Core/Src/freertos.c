@@ -148,7 +148,7 @@ void StartDefaultTask(void const * argument)
 //            HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
 //        }
 
-        osDelay(3000);
+        osDelay(1000);
     }
   /* USER CODE END StartDefaultTask */
 }
@@ -193,7 +193,9 @@ void StartTask_StreamData(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+      vTaskList(pRxBuf);
+      HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+      osDelay(1000);
   }
   /* USER CODE END StartTask_StreamData */
 }

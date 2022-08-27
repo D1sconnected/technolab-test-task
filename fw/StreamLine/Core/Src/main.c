@@ -35,6 +35,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 CircularBuffer pCirBuf;
+dataStruct     sharedStreamData = {0};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
