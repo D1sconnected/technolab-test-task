@@ -72,6 +72,7 @@ void Error_Handler(void);
 #define ADC1_GPIO_Port GPIOA
 #define JOY_UP_Pin GPIO_PIN_0
 #define JOY_UP_GPIO_Port GPIOG
+#define JOY_UP_EXTI_IRQn EXTI0_IRQn
 #define LED_GREEN_Pin GPIO_PIN_0
 #define LED_GREEN_GPIO_Port GPIOE
 #define LED_ORANGE_Pin GPIO_PIN_1

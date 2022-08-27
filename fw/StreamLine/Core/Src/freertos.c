@@ -54,7 +54,6 @@ osThreadId defaultTaskHandle;
 osThreadId CmdHandlerTaskHandle;
 osThreadId StreamDataTaskHandle;
 osThreadId ReadGpioTaskHandle;
-osThreadId ReadAdcTaskHandle;
 osThreadId ReadTempTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,7 +65,6 @@ void StartDefaultTask(void const * argument);
 void StartTask_CmdHandler(void const * argument);
 void StartTask_StreamData(void const * argument);
 void StartTask_ReadGpio(void const * argument);
-void StartTask_ReadAdc(void const * argument);
 void StartTask_ReadTemp(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -129,10 +127,6 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of ReadGpioTask */
   osThreadDef(ReadGpioTask, StartTask_ReadGpio, osPriorityNormal, 0, 128);
   ReadGpioTaskHandle = osThreadCreate(osThread(ReadGpioTask), NULL);
-
-  /* definition and creation of ReadAdcTask */
-  osThreadDef(ReadAdcTask, StartTask_ReadAdc, osPriorityNormal, 0, 128);
-  ReadAdcTaskHandle = osThreadCreate(osThread(ReadAdcTask), NULL);
 
   /* definition and creation of ReadTempTask */
   osThreadDef(ReadTempTask, StartTask_ReadTemp, osPriorityNormal, 0, 256);
@@ -207,6 +201,8 @@ void StartTask_StreamData(void const * argument)
       //memset(txStream.thrd, 0, sizeof(txStream.thrd));
       vTaskList(sharedStreamData.thrd);
       memcpy((uint8_t*)&txStream, (uint8_t*)&sharedStreamData, sizeof(txStream));
+      sharedStreamData.btn0.data = '0';
+      sharedStreamData.hld0.data = '0';
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
       osDelay(1000);
   }
@@ -233,24 +229,6 @@ void StartTask_ReadGpio(void const * argument)
       osDelay(100);
   }
   /* USER CODE END StartTask_ReadGpio */
-}
-
-/* USER CODE BEGIN Header_StartTask_ReadAdc */
-/**
-* @brief Function implementing the ReadAdcTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask_ReadAdc */
-void StartTask_ReadAdc(void const * argument)
-{
-  /* USER CODE BEGIN StartTask_ReadAdc */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask_ReadAdc */
 }
 
 /* USER CODE BEGIN Header_StartTask_ReadTemp */
