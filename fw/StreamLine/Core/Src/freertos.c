@@ -48,7 +48,8 @@ char pRxBuf[1024] = {0};
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
-osThreadId ledTaskHandle;
+osThreadId CmdHandlerTaskHandle;
+osThreadId StreamDataTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -56,7 +57,8 @@ osThreadId ledTaskHandle;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
-void StartLedTask(void const * argument);
+void StartTask_CmdHandler(void const * argument);
+void StartTask_StreamData(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -107,9 +109,13 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of ledTask */
-  osThreadDef(ledTask, StartLedTask, osPriorityNormal, 0, 128);
-  ledTaskHandle = osThreadCreate(osThread(ledTask), NULL);
+  /* definition and creation of CmdHandlerTask */
+  osThreadDef(CmdHandlerTask, StartTask_CmdHandler, osPriorityNormal, 0, 128);
+  CmdHandlerTaskHandle = osThreadCreate(osThread(CmdHandlerTask), NULL);
+
+  /* definition and creation of StreamDataTask */
+  osThreadDef(StreamDataTask, StartTask_StreamData, osPriorityNormal, 0, 128);
+  StreamDataTaskHandle = osThreadCreate(osThread(StreamDataTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -126,50 +132,61 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const * argument)
 {
-  /* USER CODE BEGIN 5 */
-  snprintf(pRxBuf, sizeof("-----------------------------------------\n\r"), "%s", "-----------------------------------------\n\r");
+  /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-  for(;;)
-  {
-      //vTaskList(&pRxBuf[43]);
-      //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-      int status = 0;
-      memset(pRxBuf, 0, sizeof(pRxBuf));
-      status = CircularBuffer_Get(pCirBuf, pRxBuf);
-      if (status)
-      {
-          HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-      }
+    snprintf(pRxBuf, sizeof("-----------------------------------------\n\r"), "%s", "-----------------------------------------\n\r");
+    /* Infinite loop */
+    for(;;)
+    {
+        //vTaskList(&pRxBuf[43]);
+        //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+        int status = 0;
+        memset(pRxBuf, 0, sizeof(pRxBuf));
+        status = CircularBuffer_Get(pCirBuf, pRxBuf);
+        if (status)
+        {
+            HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+        }
 
-      osDelay(3000);
-  }
-  /* USER CODE END 5 */
+        osDelay(3000);
+    }
+  /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_StartLedTask */
+/* USER CODE BEGIN Header_StartTask_CmdHandler */
 /**
-* @brief Function implementing the ledTask thread.
+* @brief Function implementing the CmdHandlerTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartLedTask */
-void StartLedTask(void const * argument)
+/* USER CODE END Header_StartTask_CmdHandler */
+void StartTask_CmdHandler(void const * argument)
 {
-  /* USER CODE BEGIN StartLedTask */
+  /* USER CODE BEGIN StartTask_CmdHandler */
   /* Infinite loop */
   for(;;)
   {
-      HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-      osDelay(200);
-      HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
-      osDelay(200);
-      HAL_GPIO_TogglePin(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin);
-      osDelay(200);
-      HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-      osDelay(200);
-
+    osDelay(1);
   }
-  /* USER CODE END StartLedTask */
+  /* USER CODE END StartTask_CmdHandler */
+}
+
+/* USER CODE BEGIN Header_StartTask_StreamData */
+/**
+* @brief Function implementing the StreamDataTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_StreamData */
+void StartTask_StreamData(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_StreamData */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask_StreamData */
 }
 
 /* Private application code --------------------------------------------------*/
