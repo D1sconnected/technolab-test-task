@@ -132,7 +132,7 @@ void StartDefaultTask(void const * argument)
   for(;;)
   {
       vTaskList(&pRxBuf[43]);
-      HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+      //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
       osDelay(1000);
   }
   /* USER CODE END 5 */

@@ -21,7 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-
+uint8_t gTermByte = 0;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart2;

@@ -91,7 +91,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   pCirBuf  = CircularBuffer_Create(RECORD_COUNT, RECORD_SIZE);
-  //HAL_UART_Receive_IT (&huart2, &termByte, sizeof(uint8_t));
+  HAL_UART_Receive_IT (&huart2, &gTermByte, sizeof(uint8_t));
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

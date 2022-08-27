@@ -24,6 +24,7 @@
 #include "task.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -197,5 +198,40 @@ void USART2_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    static uint8_t dataTerm[64];
 
+    static int iU2 = 0;
+
+    if (iU2 == sizeof(dataTerm) - 1)
+    {
+        iU2 = 0;
+    }
+
+    /*Rx from Desktop Terminal*/
+    if (huart->Instance == USART2)
+    {
+        dataTerm[iU2] = gTermByte;
+        iU2++;
+
+        if (gTermByte == '\r')
+        {
+            dataTerm[iU2] = '\n';
+            iU2++;
+            HAL_UART_Transmit_IT(&huart2, dataTerm, iU2);
+            iU2 = 0;
+        }
+        /* Receive one byte in interrupt mode */
+        HAL_UART_Receive_IT(&huart2, &gTermByte, sizeof(uint8_t));
+    }
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART2)
+    {
+        // ToDo: free shared resource
+    }
+}
 /* USER CODE END 1 */
