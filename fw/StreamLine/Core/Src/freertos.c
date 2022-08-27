@@ -201,7 +201,7 @@ void StartTask_StreamData(void const * argument)
       sharedStreamData.btn0.data = '0';
       sharedStreamData.hld0.data = '0';
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
-      osDelay(10000);
+      osDelay(1000);
   }
   /* USER CODE END StartTask_StreamData */
 }
@@ -266,8 +266,8 @@ void StartTask_ReadTemp(void const * argument)
       uint16_t readValue[3] = {0};
       float tCelsius = 0;
       char temp0[10] = {0};
-      char temp1[5] = {0};
-      char temp2[5] = {0};
+      char temp1[5]  = {0};
+      char temp2[5]  = {0};
 
 //      uint8_t upd[3] = {0};
 //      upd[0] = sharedStreamData.tmp0.upd;
