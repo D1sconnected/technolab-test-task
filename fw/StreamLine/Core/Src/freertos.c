@@ -190,11 +190,12 @@ void StartTask_CmdHandler(void const * argument)
 void StartTask_StreamData(void const * argument)
 {
   /* USER CODE BEGIN StartTask_StreamData */
+
   /* Infinite loop */
   for(;;)
   {
-      vTaskList(pRxBuf);
-      HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+      vTaskList(sharedStreamData.thrd);
+      HAL_UART_Transmit_IT(&huart2, (uint8_t*)&sharedStreamData, sizeof(sharedStreamData));
       osDelay(1000);
   }
   /* USER CODE END StartTask_StreamData */

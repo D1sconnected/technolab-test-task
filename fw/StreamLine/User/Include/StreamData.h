@@ -6,34 +6,40 @@
 typedef struct
 {
     uint8_t  id;
+    uint8_t  sep1;
     uint8_t  number;
+    uint8_t  sep2;
     uint8_t  data[5]; // 0.000 - 3.300
-    uint8_t  end;
+    uint8_t  end[2];
 } adcData;
 
 typedef struct
 {
     uint8_t id;
+    uint8_t sep1;
     uint8_t number;
-    uint8_t value;   // 0 - off, 1 - on
-    uint8_t end;
+    uint8_t sep2;
+    uint8_t data;   // 0 - off, 1 - on
+    uint8_t end[2];
 } gpioData;
 
 typedef struct
 {
     uint8_t id;
+    uint8_t sep1;
     uint8_t number;
+    uint8_t sep2;
     uint8_t data[10]; // -30.000000000 - 30.000000000
-    uint8_t end;
+    uint8_t end[2];
 } tempData;
 
-typedef struct
-{
-    uint8_t id;
-    uint8_t number;
-    uint8_t data[1024];
-    uint8_t end;
-} fthrData;
+//typedef struct
+//{
+//    uint8_t id;
+//    uint8_t number;
+//    uint8_t data[1024];
+//    uint8_t end[2];
+//} fthrData;
 
 typedef struct
 {
@@ -46,7 +52,7 @@ typedef struct
     gpioData  btn0;
     gpioData  hld0;
     tempData  tmp0;
-    fthrData  thr0;
+    uint8_t   thrd[1024];
 } dataStruct;
 
 #endif
