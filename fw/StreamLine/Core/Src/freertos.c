@@ -134,19 +134,19 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-    snprintf(pRxBuf, sizeof("-----------------------------------------\n\r"), "%s", "-----------------------------------------\n\r");
+//    snprintf(pRxBuf, sizeof("-----------------------------------------\n\r"), "%s", "-----------------------------------------\n\r");
     /* Infinite loop */
     for(;;)
     {
-        //vTaskList(&pRxBuf[43]);
-        //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-        int status = 0;
-        memset(pRxBuf, 0, sizeof(pRxBuf));
-        status = CircularBuffer_Get(pCirBuf, pRxBuf);
-        if (status)
-        {
-            HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-        }
+//        //vTaskList(&pRxBuf[43]);
+//        //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+//        int status = 0;
+//        memset(pRxBuf, 0, sizeof(pRxBuf));
+//        status = CircularBuffer_Get(pCirBuf, pRxBuf);
+//        if (status)
+//        {
+//            HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+//        }
 
         osDelay(3000);
     }
@@ -166,7 +166,16 @@ void StartTask_CmdHandler(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+      // Get command
+      uint8_t pTemp[6] = {0};
+      int status = CircularBuffer_Get(pCirBuf, pTemp);
+
+      // If exist -> parse command -> enable/disable stuff
+      if (status)
+      {
+          CmdHandler_ParseCommand(pTemp, sizeof(pTemp));
+      }
+      osDelay(1000);
   }
   /* USER CODE END StartTask_CmdHandler */
 }
