@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usart.h"
+#include "tim.h"
 #include "./../../User/Include/CircularBuffer.h"
 /* USER CODE END Includes */
 
@@ -58,6 +59,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern TIM_HandleTypeDef htim10;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
@@ -198,6 +200,20 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
+  */
+void TIM1_UP_TIM10_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim10);
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART2 global interrupt.
   */
 void USART2_IRQHandler(void)
@@ -253,7 +269,34 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (JOY_UP_Pin)
     {
+        HAL_TIM_Base_Start_IT(&htim10);
         sharedStreamData.btn0.data = '1';
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+    static int seconds;
+
+    if (htim->Instance == TIM10)
+    {
+
+        GPIO_PinState state = HAL_GPIO_ReadPin(JOY_UP_GPIO_Port, JOY_UP_Pin);
+        if(state)
+        {
+            seconds++;
+            if (seconds == 5)
+            {
+                sharedStreamData.hld0.data = '1';
+                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                HAL_TIM_Base_Stop_IT(&htim10);
+                seconds = 0;
+            }
+        }
+        else
+        {
+            seconds = 0;
+        }
     }
 }
 /* USER CODE END 1 */
