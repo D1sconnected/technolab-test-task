@@ -196,7 +196,6 @@ void StartTask_StreamData(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      //memset(txStream.thrd, 0, sizeof(txStream.thrd));
       vTaskList(sharedStreamData.thrd);
       memcpy((uint8_t*)&txStream, (uint8_t*)&sharedStreamData, sizeof(txStream));
       sharedStreamData.btn0.data = '0';

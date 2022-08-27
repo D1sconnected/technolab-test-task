@@ -270,7 +270,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if (JOY_UP_Pin)
     {
         HAL_TIM_Base_Start_IT(&htim10);
-        sharedStreamData.btn0.data = '1';
+        if (sharedStreamData.btn0.upd == HANDLER_ENABLE)
+        {
+            sharedStreamData.btn0.data = '1';
+        }
     }
 }
 
@@ -287,8 +290,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
             seconds++;
             if (seconds == 5)
             {
-                sharedStreamData.hld0.data = '1';
-                HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                if (sharedStreamData.hld0.upd == HANDLER_ENABLE)
+                {
+                    sharedStreamData.hld0.data = '1';
+                    HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+                }
                 HAL_TIM_Base_Stop_IT(&htim10);
                 seconds = 0;
             }
