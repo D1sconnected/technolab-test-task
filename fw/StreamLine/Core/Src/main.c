@@ -37,6 +37,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 volatile CircularBuffer pCirBuf;
+volatile char pTxAns[RECORD_SIZE + 1] = {0};
 volatile dataStruct     sharedStreamData = {0};
 volatile dataStruct     txStream = {0};
 /* USER CODE END PD */

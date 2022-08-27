@@ -43,9 +43,61 @@ int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
     return 0;
 }
 
+static int CmdHandler_ControlDataOutput (uint8_t *pUpdate, uint8_t update)
+{
+    if (pUpdate == NULL || (update != HANDLER_ENABLE && update != HANDLER_DISABLE))
+    {
+        return -1;
+    }
+
+    switch (update)
+    {
+        case HANDLER_ENABLE:
+        {
+            *pUpdate = HANDLER_ENABLE;
+        }
+        break;
+
+        case HANDLER_DISABLE:
+        {
+            *pUpdate = HANDLER_DISABLE;
+        }
+        break;
+    }
+
+    return 0;
+}
+
+static void CmdHandler_SendAckToHost (uint8_t id, uint8_t number, uint8_t update, int status)
+{
+    memset(&pTxAns, 0, sizeof(pTxAns));
+
+    pTxAns[0] = id;
+    pTxAns[1] = ',';
+    pTxAns[2] = number;
+    pTxAns[3] = ',';
+    pTxAns[4] = update;
+    pTxAns[5] = ',';
+
+    if (status)
+    {
+        pTxAns[6] = 'E';
+    }
+
+    else
+    {
+        pTxAns[6] = 'O';
+    }
+
+    pTxAns[7] = '\r';
+    pTxAns[8] = '\n';
+
+    HAL_UART_Transmit_IT(&huart2, (uint8_t*)&pTxAns, sizeof(pTxAns));
+}
+
 int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 {
-    if (pData == NULL || size < 7)
+    if (pData == NULL || size != RECORD_SIZE)
     {
         return -1;
     }
@@ -61,6 +113,8 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
     update = pData[HANDLER_UPDATE_INDEX];
     value = (uint8_t)atoi(&pData[HANDLER_VALUE_INDEX]);
 
+    int status = -1;
+
     switch (id)
     {
         case HANDLER_ADC:
@@ -69,13 +123,15 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
             {
                 case HANDLER_ADC_0:
                 {
-
+                    status = CmdHandler_ControlDataOutput(&sharedStreamData.adc0.upd, update);
+                    CmdHandler_SendAckToHost(id, number, update, status);
                 }
                 break;
 
                 case HANDLER_ADC_1:
                 {
-
+                    status = CmdHandler_ControlDataOutput(&sharedStreamData.adc1.upd, update);
+                    CmdHandler_SendAckToHost(id, number, update, status);
                 }
                 break;
             }

@@ -2,6 +2,7 @@
 #define __CMDHANDLER_H
 
 #include "main.h"
+#include "usart.h"
 #include <stdio.h>
 
 // format defines

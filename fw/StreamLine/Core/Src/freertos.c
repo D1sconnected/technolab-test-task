@@ -38,7 +38,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-char pRxBuf[1024] = {0};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -149,7 +148,6 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-//    snprintf(pRxBuf, sizeof("-----------------------------------------\n\r"), "%s", "-----------------------------------------\n\r");
     /* Infinite loop */
     for(;;)
     {
@@ -172,7 +170,7 @@ void StartTask_CmdHandler(void const * argument)
   for(;;)
   {
       // Get command
-      uint8_t pTemp[6] = {0};
+      uint8_t pTemp[RECORD_SIZE] = {0};
       int status = CircularBuffer_Get(pCirBuf, pTemp);
 
       // If exist -> parse command -> enable/disable stuff
@@ -204,7 +202,7 @@ void StartTask_StreamData(void const * argument)
       sharedStreamData.btn0.data = '0';
       sharedStreamData.hld0.data = '0';
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
-      osDelay(1000);
+      osDelay(10000);
   }
   /* USER CODE END StartTask_StreamData */
 }
