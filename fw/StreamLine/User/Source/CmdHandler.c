@@ -45,19 +45,21 @@ int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
 
 int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 {
-    if (pData == NULL || size < 5)
+    if (pData == NULL || size < 7)
     {
         return -1;
     }
 
     static uint8_t id     = 0;
     static uint8_t number = 0;
-    static uint8_t enable = 0;
+    static uint8_t update = 0;
+    static uint8_t value  = 0;
 
     // Parse command
     id     = pData[HANDLER_ID_INDEX];
     number = pData[HANDLER_NUMBER_INDEX];
-    enable = (uint8_t)atoi(&pData[HANDLER_ENABLE_INDEX]);
+    update = pData[HANDLER_UPDATE_INDEX];
+    value = (uint8_t)atoi(&pData[HANDLER_VALUE_INDEX]);
 
     switch (id)
     {
@@ -86,28 +88,28 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
             {
                 case HANDLER_LED_BLUE:
                 {
-                    CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, enable);
+                    CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, value);
                     return 0;
                 }
                 break;
 
                 case HANDLER_LED_RED:
                 {
-                    CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, enable);
+                    CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, value);
                     return 0;
                 }
                 break;
 
                 case HANDLER_LED_ORANGE:
                 {
-                    CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, enable);
+                    CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, value);
                     return 0;
                 }
                 break;
 
                 case HANDLER_LED_GREEN:
                 {
-                    CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, enable);
+                    CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, value);
                     return 0;
                 }
                 break;

@@ -101,76 +101,99 @@ int main(void)
   HAL_UART_Receive_IT (&huart2, &gTermByte, sizeof(uint8_t));
 
   // Init dataStruct
-  sharedStreamData.adc0.id      = 'A';
+  sharedStreamData.adc0.id      = HANDLER_ADC;
   sharedStreamData.adc0.sep1    = ',';
-  sharedStreamData.adc0.number  = '0';
+  sharedStreamData.adc0.number  = HANDLER_ADC_0;
   sharedStreamData.adc0.sep2    = ',';
+  sharedStreamData.adc0.upd     = HANDLER_ENABLE;
+  sharedStreamData.adc0.sep3    = ',';
   sharedStreamData.adc0.data[0] = '0';
   sharedStreamData.adc0.end[0]  = '\n';
   sharedStreamData.adc0.end[1]  = '\r';
 
-  sharedStreamData.adc1.id      = 'A';
+  sharedStreamData.adc1.id      = HANDLER_ADC;
   sharedStreamData.adc1.sep1    = ',';
-  sharedStreamData.adc1.number  = '1';
+  sharedStreamData.adc1.number  = HANDLER_ADC_1;
   sharedStreamData.adc1.sep2    = ',';
+  sharedStreamData.adc1.upd     = HANDLER_ENABLE;
+  sharedStreamData.adc1.sep3    = ',';
   sharedStreamData.adc1.data[0] = '0';
   sharedStreamData.adc1.end[0]  = '\n';
   sharedStreamData.adc1.end[1]  = '\r';
 
-  sharedStreamData.led0.id     = 'L';
+  sharedStreamData.led0.id     = HANDLER_LED;
   sharedStreamData.led0.sep1   = ',';
-  sharedStreamData.led0.number = '0';
+  sharedStreamData.led0.number = HANDLER_LED_BLUE;
   sharedStreamData.led0.sep2   = ',';
+  sharedStreamData.led0.upd    = HANDLER_ENABLE;
+  sharedStreamData.led0.sep3   = ',';
   sharedStreamData.led0.data   = '0';
   sharedStreamData.led0.end[0] = '\n';
   sharedStreamData.led0.end[1] = '\r';
 
-  sharedStreamData.led1.id     = 'L';
+  sharedStreamData.led1.id     = HANDLER_LED;
   sharedStreamData.led1.sep1   = ',';
-  sharedStreamData.led1.number = '1';
-  sharedStreamData.led1.data   = '0';
+  sharedStreamData.led1.number = HANDLER_LED_RED;
   sharedStreamData.led1.sep2   = ',';
+  sharedStreamData.led1.upd    = HANDLER_ENABLE;
+  sharedStreamData.led1.sep3   = ',';
+  sharedStreamData.led1.data   = '0';
   sharedStreamData.led1.end[0] = '\n';
   sharedStreamData.led1.end[1] = '\r';
 
-  sharedStreamData.led2.id     = 'L';
+  sharedStreamData.led2.id     = HANDLER_LED;
   sharedStreamData.led2.sep1   = ',';
-  sharedStreamData.led2.number = '2';
-  sharedStreamData.led2.data   = '0';
+  sharedStreamData.led2.number = HANDLER_LED_ORANGE;
   sharedStreamData.led2.sep2   = ',';
+  sharedStreamData.led2.upd    = HANDLER_ENABLE;
+  sharedStreamData.led2.sep3   = ',';
+  sharedStreamData.led2.data   = '0';
   sharedStreamData.led2.end[0] = '\n';
   sharedStreamData.led2.end[1] = '\r';
 
-  sharedStreamData.led3.id     = 'L';
+  sharedStreamData.led3.id     = HANDLER_LED;
   sharedStreamData.led3.sep1   = ',';
-  sharedStreamData.led3.number = '3';
+  sharedStreamData.led3.number = HANDLER_LED_GREEN;
   sharedStreamData.led3.sep2   = ',';
+  sharedStreamData.led3.upd    = HANDLER_ENABLE;
+  sharedStreamData.led3.sep3   = ',';
   sharedStreamData.led3.data   = '0';
   sharedStreamData.led3.end[0] = '\n';
   sharedStreamData.led3.end[1] = '\r';
 
-  sharedStreamData.btn0.id     = 'B';
+  sharedStreamData.btn0.id     = HANDLER_BTN;
   sharedStreamData.btn0.sep1   = ',';
-  sharedStreamData.btn0.number = '0';
+  sharedStreamData.btn0.number = HANDLER_JOY_UP;
   sharedStreamData.btn0.sep2   = ',';
+  sharedStreamData.btn0.upd    = HANDLER_ENABLE;
+  sharedStreamData.btn0.sep3   = ',';
   sharedStreamData.btn0.data   = '0';
   sharedStreamData.btn0.end[0] = '\n';
   sharedStreamData.btn0.end[1] = '\r';
 
-  sharedStreamData.hld0.id     = 'H';
+  sharedStreamData.hld0.id     = HANDLER_HOLD;
   sharedStreamData.hld0.sep1   = ',';
-  sharedStreamData.hld0.number = '0';
+  sharedStreamData.hld0.number = HANDLER_JOY_UP_HOLD;
   sharedStreamData.hld0.sep2   = ',';
+  sharedStreamData.hld0.upd    = HANDLER_ENABLE;
+  sharedStreamData.hld0.sep3   = ',';
   sharedStreamData.hld0.data   = '0';
   sharedStreamData.hld0.end[0] = '\n';
   sharedStreamData.hld0.end[1] = '\r';
 
-  sharedStreamData.tmp0.id     = 'T';
-  sharedStreamData.tmp0.sep1   = ',';
-  sharedStreamData.tmp0.number = '0';
-  sharedStreamData.tmp0.sep2   = ',';
-  sharedStreamData.tmp0.end[0] = '\n';
-  sharedStreamData.tmp0.end[1] = '\r';
+  sharedStreamData.tmp0.id      = HANDLER_TEMPERATURE;
+  sharedStreamData.tmp0.sep1    = ',';
+  sharedStreamData.tmp0.number  = HANDLER_TEMP_0;
+  sharedStreamData.tmp0.sep2    = ',';
+  sharedStreamData.tmp0.upd     = HANDLER_ENABLE;
+  sharedStreamData.tmp0.sep3    = ',';
+  sharedStreamData.tmp0.data[0] = '0';
+  sharedStreamData.tmp0.end[0]  = '\n';
+  sharedStreamData.tmp0.end[1]  = '\r';
+
+  memset(sharedStreamData.end, '-', sizeof(sharedStreamData.end));
+  sharedStreamData.end[48] = '\n';
+  sharedStreamData.end[49] = '\r';
 
   /* USER CODE END 2 */
 
