@@ -220,10 +220,32 @@ void StartTask_ReadGpio(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, &sharedStreamData.led0.data);
-      Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, &sharedStreamData.led1.data);
-      Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, &sharedStreamData.led2.data);
-      Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, &sharedStreamData.led3.data);
+//      uint8_t temp[4] = {0};
+//      temp[0] = sharedStreamData.led0.upd;
+//      temp[1] = sharedStreamData.led1.upd;
+//      temp[2] = sharedStreamData.led2.upd;
+//      temp[3] = sharedStreamData.led3.upd;
+
+      if (sharedStreamData.led0.upd == HANDLER_ENABLE)
+      {
+          Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, &sharedStreamData.led0.data);
+      }
+
+      if (sharedStreamData.led1.upd == HANDLER_ENABLE)
+      {
+          Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, &sharedStreamData.led1.data);
+      }
+
+      if (sharedStreamData.led2.upd == HANDLER_ENABLE)
+      {
+          Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, &sharedStreamData.led2.data);
+      }
+
+      if (sharedStreamData.led3.upd == HANDLER_ENABLE)
+      {
+          Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, &sharedStreamData.led3.data);
+      }
+
       osDelay(100);
   }
   /* USER CODE END StartTask_ReadGpio */
@@ -248,6 +270,11 @@ void StartTask_ReadTemp(void const * argument)
       char temp1[5] = {0};
       char temp2[5] = {0};
 
+//      uint8_t upd[3] = {0};
+//      upd[0] = sharedStreamData.tmp0.upd;
+//      upd[1] = sharedStreamData.adc0.upd;
+//      upd[2] = sharedStreamData.adc1.upd;
+
       // Get data from 3 ADC
       HAL_ADC_Start(&hadc1);
       HAL_ADC_PollForConversion(&hadc1,100);
@@ -267,14 +294,23 @@ void StartTask_ReadTemp(void const * argument)
       // Calculate temp
       tCelsius = ((VSENSE*readValue[0] - V25) / AVG_SLOPE) + 25;
 
-      snprintf(temp0, sizeof(temp0), "%f", tCelsius);
-      memcpy(&sharedStreamData.tmp0.data, &temp0, sizeof(temp0));
+      if (sharedStreamData.tmp0.upd == HANDLER_ENABLE)
+      {
+          snprintf(temp0, sizeof(temp0), "%f", tCelsius);
+          memcpy(&sharedStreamData.tmp0.data, &temp0, sizeof(temp0));
+      }
 
-      snprintf(temp1, sizeof(temp1), "%d", readValue[1]);
-      memcpy(&sharedStreamData.adc0.data[0], &temp1, sizeof(temp1));
+      if (sharedStreamData.adc0.upd == HANDLER_ENABLE)
+      {
+          snprintf(temp1, sizeof(temp1), "%d", readValue[1]);
+          memcpy(&sharedStreamData.adc0.data[0], &temp1, sizeof(temp1));
+      }
 
-      snprintf(temp2, sizeof(temp2), "%d", readValue[2]);
-      memcpy(&sharedStreamData.adc1.data[0], &temp2, sizeof(temp2));
+      if (sharedStreamData.adc1.upd == HANDLER_ENABLE)
+      {
+          snprintf(temp2, sizeof(temp2), "%d", readValue[2]);
+          memcpy(&sharedStreamData.adc1.data[0], &temp2, sizeof(temp2));
+      }
 
       osDelay(500);
   }

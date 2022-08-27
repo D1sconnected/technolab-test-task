@@ -153,7 +153,11 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
             {
                 case HANDLER_LED_BLUE:
                 {
-                    CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, value);
+                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led0.upd, update);
+                    if (!status)
+                    {
+                        CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, value);
+                    }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
@@ -161,7 +165,11 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 
                 case HANDLER_LED_RED:
                 {
-                    CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, value);
+                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led1.upd, update);
+                    if (!status)
+                    {
+                        CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, value);
+                    }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
@@ -169,7 +177,11 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 
                 case HANDLER_LED_ORANGE:
                 {
-                    CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, value);
+                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led2.upd, update);
+                    if (!status)
+                    {
+                        CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, value);
+                    }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
@@ -177,7 +189,11 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 
                 case HANDLER_LED_GREEN:
                 {
-                    CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, value);
+                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led3.upd, update);
+                    if (!status)
+                    {
+                        CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, value);
+                    }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
@@ -200,7 +216,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
         }
         break;
 
-        case HANDLER_FTHREADS:
+        case HANDLER_HOLD:
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.hld0.upd, update);
             CmdHandler_SendAckToHost(id, number, update, status);
