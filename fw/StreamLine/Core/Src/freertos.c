@@ -131,9 +131,17 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      vTaskList(&pRxBuf[43]);
+      //vTaskList(&pRxBuf[43]);
       //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-      osDelay(1000);
+      int status = 0;
+      memset(pRxBuf, 0, sizeof(pRxBuf));
+      status = CircularBuffer_Get(pCirBuf, pRxBuf);
+      if (status)
+      {
+          HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
+      }
+
+      osDelay(3000);
   }
   /* USER CODE END 5 */
 }
