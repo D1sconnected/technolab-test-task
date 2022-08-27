@@ -50,7 +50,7 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 extern volatile CircularBuffer pCirBuf;
-extern volatile char pTxAns[RECORD_SIZE + 1];
+extern volatile char pTxAns[63];
 extern volatile dataStruct sharedStreamData;
 extern volatile dataStruct txStream;
 /* USER CODE END EM */

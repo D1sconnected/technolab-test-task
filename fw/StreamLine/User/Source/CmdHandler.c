@@ -70,7 +70,7 @@ static int CmdHandler_ControlDataOutput (uint8_t *pUpdate, uint8_t update)
 
 static void CmdHandler_SendAckToHost (uint8_t id, uint8_t number, uint8_t update, int status)
 {
-    memset(&pTxAns, 0, sizeof(pTxAns));
+    memset(&pTxAns, '-', sizeof(pTxAns));
 
     pTxAns[0] = id;
     pTxAns[1] = ',';
@@ -81,17 +81,26 @@ static void CmdHandler_SendAckToHost (uint8_t id, uint8_t number, uint8_t update
 
     if (status)
     {
-        pTxAns[6] = 'E';
+        pTxAns[6]  = 'E';
+        pTxAns[7]  = 'R';
+        pTxAns[8]  = 'R';
+        pTxAns[9]  = 'O';
+        pTxAns[10] = 'R';
     }
 
     else
     {
-        pTxAns[6] = 'O';
+        pTxAns[6]  = 'O';
+        pTxAns[7]  = 'K';
+        pTxAns[8]  = 0;
+        pTxAns[9]  = 0;
+        pTxAns[10] = 0;
     }
 
-    pTxAns[7] = '\r';
-    pTxAns[8] = '\n';
-
+    pTxAns[11] = '\r';
+    pTxAns[12] = '\n';
+    pTxAns[61] = '\r';
+    pTxAns[62] = '\n';
     HAL_UART_Transmit_IT(&huart2, (uint8_t*)&pTxAns, sizeof(pTxAns));
 }
 
@@ -145,6 +154,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                 case HANDLER_LED_BLUE:
                 {
                     CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, value);
+                    CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
                 break;
@@ -152,6 +162,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                 case HANDLER_LED_RED:
                 {
                     CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, value);
+                    CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
                 break;
@@ -159,6 +170,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                 case HANDLER_LED_ORANGE:
                 {
                     CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, value);
+                    CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
                 break;
@@ -166,6 +178,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                 case HANDLER_LED_GREEN:
                 {
                     CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, value);
+                    CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
                 }
                 break;
@@ -175,25 +188,28 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 
         case HANDLER_TEMPERATURE:
         {
-
+            status = CmdHandler_ControlDataOutput(&sharedStreamData.tmp0.upd, update);
+            CmdHandler_SendAckToHost(id, number, update, status);
         }
         break;
 
         case HANDLER_BTN:
         {
-
+            status = CmdHandler_ControlDataOutput(&sharedStreamData.btn0.upd, update);
+            CmdHandler_SendAckToHost(id, number, update, status);
         }
         break;
 
         case HANDLER_FTHREADS:
         {
-
+            status = CmdHandler_ControlDataOutput(&sharedStreamData.hld0.upd, update);
+            CmdHandler_SendAckToHost(id, number, update, status);
         }
         break;
 
         default:
         {
-
+            // ToDo: Send Unsuported
         }
         break;
     }
