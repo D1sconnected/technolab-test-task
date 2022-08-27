@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usart.h"
+#include "./../../User/Include/CircularBuffer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -219,7 +220,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         {
             dataTerm[iU2] = '\n';
             iU2++;
-            HAL_UART_Transmit_IT(&huart2, dataTerm, iU2);
+            CircularBuffer_Put(pCirBuf, dataTerm, iU2);
+            //HAL_UART_Transmit_IT(&huart2, dataTerm, iU2);
             iU2 = 0;
         }
         /* Receive one byte in interrupt mode */
