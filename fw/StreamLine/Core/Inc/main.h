@@ -66,6 +66,10 @@ void Error_Handler(void);
 #define LED_RED_GPIO_Port GPIOE
 #define LED_BLUE_Pin GPIO_PIN_3
 #define LED_BLUE_GPIO_Port GPIOE
+#define ADC0_Pin GPIO_PIN_4
+#define ADC0_GPIO_Port GPIOA
+#define ADC1_Pin GPIO_PIN_5
+#define ADC1_GPIO_Port GPIOA
 #define JOY_UP_Pin GPIO_PIN_0
 #define JOY_UP_GPIO_Port GPIOG
 #define LED_GREEN_Pin GPIO_PIN_0

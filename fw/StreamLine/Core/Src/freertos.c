@@ -204,6 +204,7 @@ void StartTask_StreamData(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+      //memset(txStream.thrd, 0, sizeof(txStream.thrd));
       vTaskList(sharedStreamData.thrd);
       memcpy((uint8_t*)&txStream, (uint8_t*)&sharedStreamData, sizeof(txStream));
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
@@ -265,16 +266,40 @@ void StartTask_ReadTemp(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      uint16_t readValue = 0;
+      uint16_t readValue[3] = {0};
       float tCelsius = 0;
-      char temp[10] = {0};
+      char temp0[10] = {0};
+      char temp1[5] = {0};
+      char temp2[5] = {0};
+
+      // Get data from 3 ADC
       HAL_ADC_Start(&hadc1);
-      HAL_ADC_PollForConversion(&hadc1,1000);
-      readValue = HAL_ADC_GetValue(&hadc1);
-      tCelsius = ((VSENSE*readValue - V25) / AVG_SLOPE) + 25;
+      HAL_ADC_PollForConversion(&hadc1,100);
+      readValue[0] = HAL_ADC_GetValue(&hadc1);
       HAL_ADC_Stop(&hadc1);
-      snprintf(temp, sizeof(temp), "%f", tCelsius);
-      memcpy(&sharedStreamData.tmp0.data, &temp, sizeof(temp));
+
+      HAL_ADC_Start(&hadc1);
+      HAL_ADC_PollForConversion(&hadc1,100);
+      readValue[1] = HAL_ADC_GetValue(&hadc1);
+      HAL_ADC_Stop(&hadc1);
+
+      HAL_ADC_Start(&hadc1);
+      HAL_ADC_PollForConversion(&hadc1,100);
+      readValue[2] = HAL_ADC_GetValue(&hadc1);
+      HAL_ADC_Stop(&hadc1);
+
+      // Calculate temp
+      tCelsius = ((VSENSE*readValue[0] - V25) / AVG_SLOPE) + 25;
+
+      snprintf(temp0, sizeof(temp0), "%f", tCelsius);
+      memcpy(&sharedStreamData.tmp0.data, &temp0, sizeof(temp0));
+
+      snprintf(temp1, sizeof(temp1), "%d", readValue[1]);
+      memcpy(&sharedStreamData.adc0.data[0], &temp1, sizeof(temp1));
+
+      snprintf(temp2, sizeof(temp2), "%d", readValue[2]);
+      memcpy(&sharedStreamData.adc1.data[0], &temp2, sizeof(temp2));
+
       osDelay(500);
   }
   /* USER CODE END StartTask_ReadTemp */
