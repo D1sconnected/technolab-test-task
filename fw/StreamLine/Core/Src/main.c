@@ -35,9 +35,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-CircularBuffer pCirBuf;
-dataStruct     sharedStreamData = {0};
-bool lockData = false;
+volatile CircularBuffer pCirBuf;
+volatile dataStruct     sharedStreamData = {0};
+volatile dataStruct     txStream = {0};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/

@@ -232,7 +232,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART2)
     {
-        lockData = false;
     }
 }
 /* USER CODE END 1 */

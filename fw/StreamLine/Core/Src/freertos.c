@@ -135,7 +135,7 @@ void MX_FREERTOS_Init(void) {
   ReadAdcTaskHandle = osThreadCreate(osThread(ReadAdcTask), NULL);
 
   /* definition and creation of ReadTempTask */
-  osThreadDef(ReadTempTask, StartTask_ReadTemp, osPriorityNormal, 0, 128);
+  osThreadDef(ReadTempTask, StartTask_ReadTemp, osPriorityNormal, 0, 256);
   ReadTempTaskHandle = osThreadCreate(osThread(ReadTempTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -159,17 +159,7 @@ void StartDefaultTask(void const * argument)
     /* Infinite loop */
     for(;;)
     {
-//        //vTaskList(&pRxBuf[43]);
-//        //HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-//        int status = 0;
-//        memset(pRxBuf, 0, sizeof(pRxBuf));
-//        status = CircularBuffer_Get(pCirBuf, pRxBuf);
-//        if (status)
-//        {
-//            HAL_UART_Transmit_IT(&huart2, (uint8_t*)pRxBuf, sizeof(pRxBuf));
-//        }
-
-        osDelay(1000);
+        osDelay(10);
     }
   /* USER CODE END StartDefaultTask */
 }
@@ -214,9 +204,9 @@ void StartTask_StreamData(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      lockData = true;
       vTaskList(sharedStreamData.thrd);
-      HAL_UART_Transmit_IT(&huart2, (uint8_t*)&sharedStreamData, sizeof(sharedStreamData));
+      memcpy((uint8_t*)&txStream, (uint8_t*)&sharedStreamData, sizeof(txStream));
+      HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
       osDelay(1000);
   }
   /* USER CODE END StartTask_StreamData */
@@ -235,13 +225,10 @@ void StartTask_ReadGpio(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      if (!lockData)
-      {
-          Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, &sharedStreamData.led0.data);
-          Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, &sharedStreamData.led1.data);
-          Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, &sharedStreamData.led2.data);
-          Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, &sharedStreamData.led3.data);
-      }
+      Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, &sharedStreamData.led0.data);
+      Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, &sharedStreamData.led1.data);
+      Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, &sharedStreamData.led2.data);
+      Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, &sharedStreamData.led3.data);
       osDelay(100);
   }
   /* USER CODE END StartTask_ReadGpio */
@@ -275,21 +262,20 @@ void StartTask_ReadAdc(void const * argument)
 void StartTask_ReadTemp(void const * argument)
 {
   /* USER CODE BEGIN StartTask_ReadTemp */
-    static uint16_t readValue;
-    static float tCelsius;
   /* Infinite loop */
   for(;;)
   {
-      if (!lockData)
-      {
-          HAL_ADC_Start(&hadc1);
-          HAL_ADC_PollForConversion(&hadc1,1000);
-          readValue = HAL_ADC_GetValue(&hadc1);
-          tCelsius = ((VSENSE*readValue - V25) / AVG_SLOPE) + 25;
-          HAL_ADC_Stop(&hadc1);
-          //snprintf((char*)&sharedStreamData.tmp0.data[0], sizeof(sharedStreamData.tmp0.data), "%f", tCelsius);
-      }
-      osDelay(250);
+      uint16_t readValue = 0;
+      float tCelsius = 0;
+      char temp[10] = {0};
+      HAL_ADC_Start(&hadc1);
+      HAL_ADC_PollForConversion(&hadc1,1000);
+      readValue = HAL_ADC_GetValue(&hadc1);
+      tCelsius = ((VSENSE*readValue - V25) / AVG_SLOPE) + 25;
+      HAL_ADC_Stop(&hadc1);
+      snprintf(temp, sizeof(temp), "%f", tCelsius);
+      memcpy(&sharedStreamData.tmp0.data, &temp, sizeof(temp));
+      osDelay(500);
   }
   /* USER CODE END StartTask_ReadTemp */
 }

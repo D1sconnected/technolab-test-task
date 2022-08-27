@@ -49,9 +49,9 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-extern CircularBuffer pCirBuf;
-extern dataStruct sharedStreamData;
-extern bool lockData;
+extern volatile CircularBuffer pCirBuf;
+extern volatile dataStruct sharedStreamData;
+extern volatile dataStruct txStream;
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
