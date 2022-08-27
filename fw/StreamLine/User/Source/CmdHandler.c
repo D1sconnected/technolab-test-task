@@ -21,6 +21,28 @@ static int CmdHandler_ToogleLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t 
     return 0;
 }
 
+int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
+{
+    if (GPIOx == NULL)
+    {
+        return -1;
+    }
+
+    GPIO_PinState state = HAL_GPIO_ReadPin(GPIOx, GPIO_Pin);
+
+    // Implemented due inverted logic on demo board
+    if (state)
+    {
+        *pData = '0';
+    }
+    else
+    {
+        *pData = '1';
+    }
+
+    return 0;
+}
+
 int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
 {
     if (pData == NULL || size < 5)

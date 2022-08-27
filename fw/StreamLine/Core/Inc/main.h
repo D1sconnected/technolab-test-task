@@ -31,6 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
 #include "FreeRTOS.h"
 #include "./../../User/Include/CircularBuffer.h"
 #include "./../../User/Include/CmdHandler.h"
@@ -50,6 +51,7 @@ extern "C" {
 /* USER CODE BEGIN EM */
 extern CircularBuffer pCirBuf;
 extern dataStruct sharedStreamData;
+extern bool lockData;
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

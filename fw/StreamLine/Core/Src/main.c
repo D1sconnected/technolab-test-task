@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "adc.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -36,6 +37,7 @@
 /* USER CODE BEGIN PD */
 CircularBuffer pCirBuf;
 dataStruct     sharedStreamData = {0};
+bool lockData = false;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -90,7 +92,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+
   pCirBuf  = CircularBuffer_Create(RECORD_COUNT, RECORD_SIZE);
   HAL_UART_Receive_IT (&huart2, &gTermByte, sizeof(uint8_t));
 
@@ -143,6 +147,13 @@ int main(void)
   sharedStreamData.led3.end[0] = '\n';
   sharedStreamData.led3.end[1] = '\r';
 
+  sharedStreamData.tmp0.id = 'T';
+  sharedStreamData.tmp0.sep1 = ',';
+  sharedStreamData.tmp0.number = '0';
+  sharedStreamData.tmp0.sep2 = ',';
+  sharedStreamData.tmp0.end[0] = '\n';
+  sharedStreamData.tmp0.end[1] = '\r';
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -183,7 +194,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 100;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -193,12 +210,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }

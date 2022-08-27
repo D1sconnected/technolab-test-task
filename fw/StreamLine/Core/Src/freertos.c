@@ -25,12 +25,15 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "adc.h"
 #include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define V25 0.76
+#define AVG_SLOPE .0025
+#define VSENSE 3.3/4096
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -50,6 +53,9 @@ char pRxBuf[1024] = {0};
 osThreadId defaultTaskHandle;
 osThreadId CmdHandlerTaskHandle;
 osThreadId StreamDataTaskHandle;
+osThreadId ReadGpioTaskHandle;
+osThreadId ReadAdcTaskHandle;
+osThreadId ReadTempTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -59,6 +65,9 @@ osThreadId StreamDataTaskHandle;
 void StartDefaultTask(void const * argument);
 void StartTask_CmdHandler(void const * argument);
 void StartTask_StreamData(void const * argument);
+void StartTask_ReadGpio(void const * argument);
+void StartTask_ReadAdc(void const * argument);
+void StartTask_ReadTemp(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -114,8 +123,20 @@ void MX_FREERTOS_Init(void) {
   CmdHandlerTaskHandle = osThreadCreate(osThread(CmdHandlerTask), NULL);
 
   /* definition and creation of StreamDataTask */
-  osThreadDef(StreamDataTask, StartTask_StreamData, osPriorityNormal, 0, 128);
+  osThreadDef(StreamDataTask, StartTask_StreamData, osPriorityHigh, 0, 128);
   StreamDataTaskHandle = osThreadCreate(osThread(StreamDataTask), NULL);
+
+  /* definition and creation of ReadGpioTask */
+  osThreadDef(ReadGpioTask, StartTask_ReadGpio, osPriorityNormal, 0, 128);
+  ReadGpioTaskHandle = osThreadCreate(osThread(ReadGpioTask), NULL);
+
+  /* definition and creation of ReadAdcTask */
+  osThreadDef(ReadAdcTask, StartTask_ReadAdc, osPriorityNormal, 0, 128);
+  ReadAdcTaskHandle = osThreadCreate(osThread(ReadAdcTask), NULL);
+
+  /* definition and creation of ReadTempTask */
+  osThreadDef(ReadTempTask, StartTask_ReadTemp, osPriorityNormal, 0, 128);
+  ReadTempTaskHandle = osThreadCreate(osThread(ReadTempTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -190,15 +211,87 @@ void StartTask_CmdHandler(void const * argument)
 void StartTask_StreamData(void const * argument)
 {
   /* USER CODE BEGIN StartTask_StreamData */
-
   /* Infinite loop */
   for(;;)
   {
+      lockData = true;
       vTaskList(sharedStreamData.thrd);
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&sharedStreamData, sizeof(sharedStreamData));
       osDelay(1000);
   }
   /* USER CODE END StartTask_StreamData */
+}
+
+/* USER CODE BEGIN Header_StartTask_ReadGpio */
+/**
+* @brief Function implementing the ReadGpioTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_ReadGpio */
+void StartTask_ReadGpio(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_ReadGpio */
+  /* Infinite loop */
+  for(;;)
+  {
+      if (!lockData)
+      {
+          Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, &sharedStreamData.led0.data);
+          Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, &sharedStreamData.led1.data);
+          Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, &sharedStreamData.led2.data);
+          Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, &sharedStreamData.led3.data);
+      }
+      osDelay(100);
+  }
+  /* USER CODE END StartTask_ReadGpio */
+}
+
+/* USER CODE BEGIN Header_StartTask_ReadAdc */
+/**
+* @brief Function implementing the ReadAdcTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_ReadAdc */
+void StartTask_ReadAdc(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_ReadAdc */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask_ReadAdc */
+}
+
+/* USER CODE BEGIN Header_StartTask_ReadTemp */
+/**
+* @brief Function implementing the ReadTempTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask_ReadTemp */
+void StartTask_ReadTemp(void const * argument)
+{
+  /* USER CODE BEGIN StartTask_ReadTemp */
+    static uint16_t readValue;
+    static float tCelsius;
+  /* Infinite loop */
+  for(;;)
+  {
+      if (!lockData)
+      {
+          HAL_ADC_Start(&hadc1);
+          HAL_ADC_PollForConversion(&hadc1,1000);
+          readValue = HAL_ADC_GetValue(&hadc1);
+          tCelsius = ((VSENSE*readValue - V25) / AVG_SLOPE) + 25;
+          HAL_ADC_Stop(&hadc1);
+          //snprintf((char*)&sharedStreamData.tmp0.data[0], sizeof(sharedStreamData.tmp0.data), "%f", tCelsius);
+      }
+      osDelay(250);
+  }
+  /* USER CODE END StartTask_ReadTemp */
 }
 
 /* Private application code --------------------------------------------------*/

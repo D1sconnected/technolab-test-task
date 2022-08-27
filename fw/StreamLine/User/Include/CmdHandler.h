@@ -25,6 +25,7 @@
 #define HANDLER_LED_ORANGE  '2'
 #define HANDLER_LED_GREEN   '3'
 
+int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData); // ToDo: rename/refactor
 int CmdHandler_ParseCommand (uint8_t *pData, size_t size);
 
 #endif

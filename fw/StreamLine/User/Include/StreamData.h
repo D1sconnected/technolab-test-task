@@ -33,14 +33,7 @@ typedef struct
     uint8_t end[2];
 } tempData;
 
-//typedef struct
-//{
-//    uint8_t id;
-//    uint8_t number;
-//    uint8_t data[1024];
-//    uint8_t end[2];
-//} fthrData;
-
+#pragma pack(push, 1)
 typedef struct
 {
     adcData   adc0;
@@ -54,5 +47,6 @@ typedef struct
     tempData  tmp0;
     uint8_t   thrd[1024];
 } dataStruct;
+#pragma pack(pop)
 
 #endif
