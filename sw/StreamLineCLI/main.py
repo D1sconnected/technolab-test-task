@@ -59,6 +59,27 @@ def parse_stream(streamList):
 
     return formated
 
+def send_control_output(key, data):
+
+    output = []
+    output.append(key[0:1])
+    output.append(',')
+    output.append(key[1:2])
+    output.append(',')
+
+    if data[0] == 'E':
+        output.append('D')
+    else:
+        output.append('E')
+    output.append(',')
+    output.append(data[1])
+    output.append('\r')
+
+    s = ''.join(output)
+    b = str.encode(s)
+
+    serialInst.write(b)
+
 def main(stdscr):
 
     # Display Stream data content
@@ -132,7 +153,7 @@ def main(stdscr):
             if pressed_key == HINTS_HLD0_OUTPUT_KEY:
                 exit()
             if pressed_key == HINTS_TMP0_OUTPUT_KEY:
-                serialInst.write("T,0,D,0\r".encode())
+                send_control_output('T0', data_dict.get('T0'))
             if pressed_key == HINTS_LED0_STATE_KEY:
                 serialInst.write("L,0,E,0\r".encode())
             if pressed_key == HINTS_LED1_STATE_KEY:
@@ -147,7 +168,8 @@ def main(stdscr):
                 if packet[0] == 0:
                     now = datetime.now()
                     current_time = now.strftime("%H:%M:%S")
-                    data_dict = parse_stream(frame)
+                    temp_dict = parse_stream(frame)
+                    data_dict.update(temp_dict)
                     data_window.clear()
                     for x in range(len(frame)):
                         data_window.addstr(x, 0, str(frame[x]))
