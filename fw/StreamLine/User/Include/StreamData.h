@@ -3,16 +3,22 @@
 
 #include <stdio.h>
 
+/* Data template
+uint8_t id[4] = 'ADC0'; ID + NUMBER
+uint8_t sep1  = ',';
+uint8_t upd   = 'E' or 'D'
+uint8_t sep2  = ',';
+uint8_t data[depends on type]
+uint8_t end[2] = '\r' + '\n'
+*/
 #pragma pack(push, 1)
 typedef struct
 {
-    uint8_t  id;
+    uint8_t  id[4];
     uint8_t  sep1;
-    uint8_t  number;
-    uint8_t  sep2;
     uint8_t  upd;
-    uint8_t  sep3;
-    uint8_t  data[5]; // 0.000 - 3.300
+    uint8_t  sep2;
+    uint8_t  data[5];
     uint8_t  end[2];
 } adcData;
 #pragma pack(pop)
@@ -20,13 +26,11 @@ typedef struct
 #pragma pack(push, 1)
 typedef struct
 {
-    uint8_t id;
+    uint8_t id[4];
     uint8_t sep1;
-    uint8_t number;
-    uint8_t sep2;
     uint8_t upd;
-    uint8_t sep3;
-    uint8_t data;   // 0 - off, 1 - on
+    uint8_t sep2;
+    uint8_t data[3]; // 'ON\0' or 'OFF'
     uint8_t end[2];
 } gpioData;
 #pragma pack(pop)
@@ -34,12 +38,10 @@ typedef struct
 #pragma pack(push, 1)
 typedef struct
 {
-    uint8_t id;
+    uint8_t id[4];
     uint8_t sep1;
-    uint8_t number;
-    uint8_t sep2;
     uint8_t upd;
-    uint8_t sep3;
+    uint8_t sep2;
     uint8_t data[10]; // ToDo: increase
     uint8_t end[2];
 } tempData;

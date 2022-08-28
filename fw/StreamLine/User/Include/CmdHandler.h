@@ -7,22 +7,25 @@
 
 // format defines
 #define HANDLER_ID_INDEX     0
-#define HANDLER_NUMBER_INDEX 2
-#define HANDLER_UPDATE_INDEX 4
-#define HANDLER_VALUE_INDEX  6
+#define HANDLER_NUMBER_INDEX 3
+#define HANDLER_UPDATE_INDEX 5
+#define HANDLER_DATA_INDEX   7
 
 #define HANDLER_ENABLE      'E'
 #define HANDLER_DISABLE     'D'
 
 // id defines
-#define HANDLER_ADC 'A'
-#define HANDLER_LED 'L'
-#define HANDLER_TEMPERATURE 'T'
-#define HANDLER_BTN 'B'
-#define HANDLER_HOLD 'H'
-#define HANDLER_FTHREADS 'F'
+#define HANDLER_ADC0        "ADC0"
+#define HANDLER_ADC1        "ADC1"
+#define HANDLER_LED0        "LED0"
+#define HANDLER_LED1        "LED1"
+#define HANDLER_LED2        "LED2"
+#define HANDLER_LED3        "LED3"
+#define HANDLER_TMP0        "TMP0"
+#define HANDLER_BTN0        "BTN0"
+#define HANDLER_HLD0        "HLD0"
+#define HANDLER_FTH0        "FTH0"
 
-// service defines
 #define HANDLER_ADC_0 '0'
 #define HANDLER_ADC_1 '1'
 

@@ -120,13 +120,13 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
     id     = pData[HANDLER_ID_INDEX];
     number = pData[HANDLER_NUMBER_INDEX];
     update = pData[HANDLER_UPDATE_INDEX];
-    value = (uint8_t)atoi(&pData[HANDLER_VALUE_INDEX]);
+    value = (uint8_t)atoi(&pData[HANDLER_DATA_INDEX]);
 
     int status = -1;
 
     switch (id)
     {
-        case HANDLER_ADC:
+        case 'A':
         {
             switch (number)
             {
@@ -147,7 +147,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
         }
         break;
 
-        case HANDLER_LED:
+        case 'L':
         {
             switch (number)
             {
@@ -202,21 +202,21 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
         }
         break;
 
-        case HANDLER_TEMPERATURE:
+        case 'T':
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.tmp0.upd, update);
             CmdHandler_SendAckToHost(id, number, update, status);
         }
         break;
 
-        case HANDLER_BTN:
+        case 'B':
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.btn0.upd, update);
             CmdHandler_SendAckToHost(id, number, update, status);
         }
         break;
 
-        case HANDLER_HOLD:
+        case 'H':
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.hld0.upd, update);
             CmdHandler_SendAckToHost(id, number, update, status);

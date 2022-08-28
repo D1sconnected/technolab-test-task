@@ -198,8 +198,8 @@ void StartTask_StreamData(void const * argument)
   {
       vTaskList(sharedStreamData.thrd);
       memcpy((uint8_t*)&txStream, (uint8_t*)&sharedStreamData, sizeof(txStream));
-      sharedStreamData.btn0.data = '0';
-      sharedStreamData.hld0.data = '0';
+      //sharedStreamData.btn0.data = 'OFF';
+      //sharedStreamData.hld0.data = 'OFF';
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
       osDelay(1000);
   }
