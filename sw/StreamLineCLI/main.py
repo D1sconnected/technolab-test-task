@@ -4,6 +4,7 @@ import curses
 from curses import wrapper
 import time
 import re
+import os
 
 ports = serial.tools.list_ports.comports()
 serialInst = serial.Serial()
@@ -99,6 +100,29 @@ def send_control_state(key, data):
     b = str.encode(s)
     serialInst.write(b)
 
+
+def data_saver(start_time):
+    # folder where data will be saved locally
+    data_folder = './output/'
+    # create folder if it doesn't exist
+    if os.path.isdir(data_folder) == False:
+        os.mkdir(data_folder)
+
+    # filename based on start recording time & type
+    filename = datetime.strftime(start_time, '%Y_%m_%d_%H_%M_%S_log')
+
+    file_exists = os.path.exists(data_folder+filename+'.txt')
+
+    if not file_exists:
+        file = open(data_folder+filename+'.txt', "x")
+        file.close()
+
+    log = open(data_folder+filename+'.txt', "a")
+    log.write('hello')
+    log.close()
+
+    return filename
+
 def main(stdscr):
 
     # Display Stream data content
@@ -149,6 +173,8 @@ def main(stdscr):
 
 
     data_dict = {}
+    start_date_and_time = datetime.now()
+
     stdscr.nodelay(True)
     try:
         while True:
@@ -193,6 +219,7 @@ def main(stdscr):
                     for x in range(len(frame)):
                         data_window.addstr(x, 0, str(frame[x]))
                         data_window.refresh()
+                    data_saver(start_date_and_time)
                     frame.clear()
                     continue
                 my_string = str(packet.decode('utf').rstrip('\n'))
