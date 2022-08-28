@@ -10,6 +10,21 @@ serialInst = serial.Serial()
 
 portList = []
 
+HINTS_ADC0_OUTPUT_KEY = ord('1')
+HINTS_ADC1_OUTPUT_KEY = ord('2')
+HINTS_LED0_OUTPUT_KEY = ord('3')
+HINTS_LED1_OUTPUT_KEY = ord('4')
+HINTS_LED2_OUTPUT_KEY = ord('5')
+HINTS_LED3_OUTPUT_KEY = ord('6')
+HINTS_BTN0_OUTPUT_KEY = ord('7')
+HINTS_HLD0_OUTPUT_KEY = ord('8')
+HINTS_TMP0_OUTPUT_KEY = ord('9')
+
+HINTS_LED0_STATE_KEY  = ord('b')
+HINTS_LED1_STATE_KEY  = ord('r')
+HINTS_LED2_STATE_KEY  = ord('o')
+HINTS_LED3_STATE_KEY  = ord('g')
+
 DEFAULT_BAUDRATE = 115200
 
 HINTS_WINDOW_HEIGHT = 6
@@ -70,20 +85,57 @@ def main(stdscr):
     hints_window.addstr('-----------------------------------------------------------------------')
     hints_window.refresh()
 
-    while True:
-        if serialInst.in_waiting:
-            packet = serialInst.readline()
-            if packet[0] == 0:
-                now = datetime.now()
-                current_time = now.strftime("%H:%M:%S")
-                data_window.clear()
-                for x in range(len(frame)):
-                    data_window.addstr(x, 0, str(frame[x]))
-                    data_window.refresh()
-                frame.clear()
-                continue
-            my_string = str(packet.decode('utf').rstrip('\n'))
-            my_string = my_string.replace('\0','')
-            frame.append(my_string)
+    stdscr.nodelay(True)
+    try:
+        while True:
+            # Capture if a key was pressed
+            pressed_key = stdscr.getch()
+
+            if pressed_key == HINTS_ADC0_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_ADC1_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_LED0_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_LED1_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_LED2_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_LED3_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_BTN0_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_HLD0_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_TMP0_OUTPUT_KEY:
+                exit()
+            if pressed_key == HINTS_LED0_STATE_KEY:
+                exit()
+            if pressed_key == HINTS_LED1_STATE_KEY:
+                exit()
+            if pressed_key == HINTS_LED2_STATE_KEY:
+                exit()
+            if pressed_key == HINTS_LED3_STATE_KEY:
+                exit()
+
+            if serialInst.in_waiting:
+                packet = serialInst.readline()
+                if packet[0] == 0:
+                    now = datetime.now()
+                    current_time = now.strftime("%H:%M:%S")
+                    data_window.clear()
+                    for x in range(len(frame)):
+                        data_window.addstr(x, 0, str(frame[x]))
+                        data_window.refresh()
+                    frame.clear()
+                    continue
+                my_string = str(packet.decode('utf').rstrip('\n'))
+                my_string = my_string.replace('\0','')
+                frame.append(my_string)
+
+    except (KeyboardInterrupt, SystemExit):
+        # Revert the changes from 'curses'
+        curses.endwin()
+        exit()
 
 wrapper(main)
