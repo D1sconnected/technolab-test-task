@@ -22,9 +22,9 @@ def main(stdscr):
         stdscr.addstr(str(onePort))
 
     val = stdscr.getkey()
-    stdscr.clear()
-    stdscr.addstr(f"val: {val}")
-    stdscr.getch()
+    # stdscr.clear()
+    # stdscr.addstr(f"val: {val}")
+    # stdscr.getch()
 
     for x in range(0, len(portList)):
         if portList[x].startswith("COM" + str(val)):
@@ -41,9 +41,6 @@ def main(stdscr):
     serialInst.open()
 
     stdscr.clear()
-    stdscr.addstr("Open port\n\r")
-    stdscr.getch()
-    stdscr.clear()
     while True:
         if serialInst.in_waiting:
             packet = serialInst.readline()
@@ -55,12 +52,13 @@ def main(stdscr):
                 stdscr.clear()
                 for x in range(len(tempList)):
                     stdscr.addstr(str(tempList[x]))
+                    stdscr.addstr("\n")
                     stdscr.refresh()
                 tempList.clear()
                 continue
             # tempList.append(packet.decode('utf').rstrip('\n'))
             my_string = str(packet.decode('utf').rstrip('\n'))
-            my_string = my_string.rstrip('\0')
+            my_string = my_string.replace('\0','')
             tempList.append(my_string)
 
 
