@@ -37,6 +37,28 @@ DATA_WINDOW_WIDTH  = 50
 DATA_WINDOW_X_POS  = 0
 DATA_WINDOW_Y_POS  = HINTS_WINDOW_HEIGHT
 
+DATA_SEPARATOR = ','
+DATA_CARRIAGE_RETURN = '\r'
+DATA_LINES = 9
+
+def parse_stream(streamList):
+
+    temp = []
+    formated = {}
+    for idx, item in enumerate(streamList):
+        if idx is DATA_LINES:
+            break
+
+        formated_string = item.replace(DATA_SEPARATOR, '')
+        formated_string = formated_string.replace(DATA_CARRIAGE_RETURN, '')
+        key = formated_string[0:2]
+        temp.append(formated_string[2:3])
+        temp.append(formated_string[3:])
+        formated.update({key: temp.copy()})
+        temp.clear()
+
+    return formated
+
 def main(stdscr):
 
     # Display Stream data content
@@ -85,6 +107,8 @@ def main(stdscr):
     hints_window.addstr('-----------------------------------------------------------------------')
     hints_window.refresh()
 
+
+    data_dict = {}
     stdscr.nodelay(True)
     try:
         while True:
@@ -108,21 +132,22 @@ def main(stdscr):
             if pressed_key == HINTS_HLD0_OUTPUT_KEY:
                 exit()
             if pressed_key == HINTS_TMP0_OUTPUT_KEY:
-                exit()
+                serialInst.write("T,0,D,0\r".encode())
             if pressed_key == HINTS_LED0_STATE_KEY:
-                exit()
+                serialInst.write("L,0,E,0\r".encode())
             if pressed_key == HINTS_LED1_STATE_KEY:
-                exit()
+                serialInst.write("L,1,E,0\r".encode())
             if pressed_key == HINTS_LED2_STATE_KEY:
-                exit()
+                serialInst.write("L,2,E,0\r".encode())
             if pressed_key == HINTS_LED3_STATE_KEY:
-                exit()
+                serialInst.write("L,3,E,0\r".encode())
 
             if serialInst.in_waiting:
                 packet = serialInst.readline()
                 if packet[0] == 0:
                     now = datetime.now()
                     current_time = now.strftime("%H:%M:%S")
+                    data_dict = parse_stream(frame)
                     data_window.clear()
                     for x in range(len(frame)):
                         data_window.addstr(x, 0, str(frame[x]))
