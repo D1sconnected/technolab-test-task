@@ -42,9 +42,6 @@ DATA_SEPARATOR = ','
 DATA_CARRIAGE_RETURN = '\r'
 DATA_LINES = 9
 
-GREEN_AND_BLACK = 1
-RED_AND_BLACK = 2
-
 def parse_stream(streamList):
 
     temp = []
@@ -129,14 +126,6 @@ def data_saver(start_time, data, timestamp):
 
     return filename
 
-def data_print(formated_data, window):
-    i = 0
-    for key, val in formated_data.items():
-        window.addstr(i, 0, str(key), GREEN_AND_BLACK)
-        window.addstr(i, 2, str(val), GREEN_AND_BLACK)
-        i += 1
-        window.refresh()
-
 def main(stdscr):
 
     # Display Stream data content
@@ -148,8 +137,10 @@ def main(stdscr):
     # Create color pairs
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     GREEN_AND_BLACK = curses.color_pair(1)
     RED_AND_BLACK = curses.color_pair(2)
+    YELLOW_AND_BLACK = curses.color_pair(3)
 
     stdscr.clear()
     stdscr.addstr("Press any key to continue...")
@@ -248,7 +239,7 @@ def main(stdscr):
                         elif color_slice == 'D':
                             data_window.addstr(x, 0, str(frame[x]), RED_AND_BLACK)
                         else:
-                            data_window.addstr(x, 0, str(frame[x]))
+                            data_window.addstr(x, 0, str(frame[x]), YELLOW_AND_BLACK)
                         data_window.refresh()
                         # data_print(data_dict, data_window)
                     if len(frame) > 0:
