@@ -28,7 +28,7 @@ HINTS_LED3_STATE_KEY  = ord('g')
 
 DEFAULT_BAUDRATE = 115200
 
-HINTS_WINDOW_HEIGHT = 6
+HINTS_WINDOW_HEIGHT = 7
 HINTS_WINDOW_WIDTH  = 80
 HINTS_WINDOW_X_POS  = 0
 HINTS_WINDOW_Y_POS  = 0
@@ -101,7 +101,7 @@ def send_control_state(key, data):
     serialInst.write(b)
 
 
-def data_saver(start_time):
+def data_saver(start_time, data, timestamp):
     # folder where data will be saved locally
     data_folder = './output/'
     # create folder if it doesn't exist
@@ -118,7 +118,10 @@ def data_saver(start_time):
         file.close()
 
     log = open(data_folder+filename+'.txt', "a")
-    log.write('hello')
+
+    log.write('\n----------------['+timestamp+']----------------\n')
+    for item in data:
+        log.write(item)
     log.close()
 
     return filename
@@ -160,20 +163,23 @@ def main(stdscr):
     stdscr.clear()
     stdscr.refresh()
 
+    # prog global data
+    data_dict = {}
+    start_date_and_time = datetime.now()
+    current_time = datetime.now()
+    current_time = current_time.strftime("%H:%M:%S")
+
     # Display hints
     hints_window.clear()
     hints_window.addstr('Connected to: {} '.format(portVar))
     hints_window.addstr('with {} baudrate\n'.format(DEFAULT_BAUDRATE))
+    hints_window.addstr('Current time: {}\n'.format(current_time))
     hints_window.addstr('-----------------------------------------------------------------------\n')
     hints_window.addstr('Press [NUMBER] to ENABLE/DISABLE output or [KEY] to toggle state\n')
     hints_window.addstr('[1]ADC0 [2]ADC1 [3]LED0 [4]LED1 [5]LED2 [6]LED3 [7]BTN0 [8]HLD0 [9]TMP0\n')
     hints_window.addstr('[B]LED0 [R]LED1 [O]LED2 [G]LED3\n')
     hints_window.addstr('-----------------------------------------------------------------------')
     hints_window.refresh()
-
-
-    data_dict = {}
-    start_date_and_time = datetime.now()
 
     stdscr.nodelay(True)
     try:
@@ -213,13 +219,16 @@ def main(stdscr):
                 if packet[0] == 0:
                     now = datetime.now()
                     current_time = now.strftime("%H:%M:%S")
+                    hints_window.addstr(1, 0, 'Current time: {}\n'.format(current_time))
+                    hints_window.refresh()
                     temp_dict = parse_stream(frame)
                     data_dict.update(temp_dict)
                     data_window.clear()
                     for x in range(len(frame)):
                         data_window.addstr(x, 0, str(frame[x]))
                         data_window.refresh()
-                    data_saver(start_date_and_time)
+                    if len(frame) > 0:
+                        data_saver(start_date_and_time, frame, current_time)
                     frame.clear()
                     continue
                 my_string = str(packet.decode('utf').rstrip('\n'))
