@@ -31,11 +31,12 @@ serialInst.open()
 while True:
     if serialInst.in_waiting:
         packet = serialInst.readline()
-        if packet[0] == 0:
+        if packet[1] == 0:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            tempDict = {current_time: tempList}
+            tempDict = {current_time: tempList.copy()}
             dataDict.update(tempDict)
+            tempList.clear()
             continue
         tempList.append(packet.decode('utf').rstrip('\n'))
         print(packet.decode('utf').rstrip('\n'))
