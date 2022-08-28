@@ -77,7 +77,26 @@ def send_control_output(key, data):
 
     s = ''.join(output)
     b = str.encode(s)
+    serialInst.write(b)
 
+def send_control_state(key, data):
+
+    output = []
+    output.append(key[0:1])
+    output.append(',')
+    output.append(key[1:2])
+    output.append(',')
+    output.append(data[0])
+    output.append(',')
+
+    if data[1] == '1':
+        output.append('0')
+    elif data[1] == '0':
+        output.append('1')
+    output.append('\r')
+
+    s = ''.join(output)
+    b = str.encode(s)
     serialInst.write(b)
 
 def main(stdscr):
@@ -137,31 +156,31 @@ def main(stdscr):
             pressed_key = stdscr.getch()
 
             if pressed_key == HINTS_ADC0_OUTPUT_KEY:
-                exit()
+                send_control_output('A0', data_dict.get('A0'))
             if pressed_key == HINTS_ADC1_OUTPUT_KEY:
-                exit()
+                send_control_output('A1', data_dict.get('A1'))
             if pressed_key == HINTS_LED0_OUTPUT_KEY:
-                exit()
+                send_control_output('L0', data_dict.get('L0'))
             if pressed_key == HINTS_LED1_OUTPUT_KEY:
-                exit()
+                send_control_output('L1', data_dict.get('L1'))
             if pressed_key == HINTS_LED2_OUTPUT_KEY:
-                exit()
+                send_control_output('L2', data_dict.get('L2'))
             if pressed_key == HINTS_LED3_OUTPUT_KEY:
-                exit()
+                send_control_output('L3', data_dict.get('L3'))
             if pressed_key == HINTS_BTN0_OUTPUT_KEY:
-                exit()
+                send_control_output('B0', data_dict.get('B0'))
             if pressed_key == HINTS_HLD0_OUTPUT_KEY:
-                exit()
+                send_control_output('H0', data_dict.get('H0'))
             if pressed_key == HINTS_TMP0_OUTPUT_KEY:
                 send_control_output('T0', data_dict.get('T0'))
             if pressed_key == HINTS_LED0_STATE_KEY:
-                serialInst.write("L,0,E,0\r".encode())
+                send_control_state('L0', data_dict.get('L0'))
             if pressed_key == HINTS_LED1_STATE_KEY:
-                serialInst.write("L,1,E,0\r".encode())
+                send_control_state('L1', data_dict.get('L1'))
             if pressed_key == HINTS_LED2_STATE_KEY:
-                serialInst.write("L,2,E,0\r".encode())
+                send_control_state('L2', data_dict.get('L2'))
             if pressed_key == HINTS_LED3_STATE_KEY:
-                serialInst.write("L,3,E,0\r".encode())
+                send_control_state('L3', data_dict.get('L3'))
 
             if serialInst.in_waiting:
                 packet = serialInst.readline()
