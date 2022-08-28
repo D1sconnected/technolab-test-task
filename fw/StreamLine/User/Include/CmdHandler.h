@@ -14,6 +14,9 @@
 #define HANDLER_ENABLE      'E'
 #define HANDLER_DISABLE     'D'
 
+#define HANDLER_ON          "ON\0"
+#define HANDLER_OFF         "OFF"
+
 // id defines
 #define HANDLER_ADC0        "ADC0"
 #define HANDLER_ADC1        "ADC1"
@@ -41,6 +44,6 @@
 #define HANDLER_TEMP_0      '0'
 
 int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData); // ToDo: rename/refactor
-int CmdHandler_ParseCommand (uint8_t *pData, size_t size);
+int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size);
 
 #endif

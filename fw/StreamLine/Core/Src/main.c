@@ -122,7 +122,7 @@ int main(void)
   sharedStreamData.led0.sep1   = ',';
   sharedStreamData.led0.upd    = HANDLER_ENABLE;
   sharedStreamData.led0.sep2   = ',';
-  memset(sharedStreamData.led0.data, '0', sizeof(sharedStreamData.led0.data));
+  memcpy(sharedStreamData.led0.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led0.id));
   sharedStreamData.led0.end[0] = '\n';
   sharedStreamData.led0.end[1] = '\r';
 
@@ -130,7 +130,7 @@ int main(void)
   sharedStreamData.led1.sep1   = ',';
   sharedStreamData.led1.upd    = HANDLER_ENABLE;
   sharedStreamData.led1.sep2   = ',';
-  memset(sharedStreamData.led1.data, '0', sizeof(sharedStreamData.led1.data));
+  memcpy(sharedStreamData.led1.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led1.id));
   sharedStreamData.led1.end[0] = '\n';
   sharedStreamData.led1.end[1] = '\r';
 
@@ -138,7 +138,7 @@ int main(void)
   sharedStreamData.led2.sep1   = ',';
   sharedStreamData.led2.upd    = HANDLER_ENABLE;
   sharedStreamData.led2.sep2   = ',';
-  memset(sharedStreamData.led2.data, '0', sizeof(sharedStreamData.led2.data));
+  memcpy(sharedStreamData.led2.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led2.id));
   sharedStreamData.led2.end[0] = '\n';
   sharedStreamData.led2.end[1] = '\r';
 
@@ -146,7 +146,7 @@ int main(void)
   sharedStreamData.led3.sep1   = ',';
   sharedStreamData.led3.upd    = HANDLER_ENABLE;
   sharedStreamData.led3.sep2   = ',';
-  memset(sharedStreamData.led3.data, '0', sizeof(sharedStreamData.led3.data));
+  memcpy(sharedStreamData.led3.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led3.id));
   sharedStreamData.led3.end[0] = '\n';
   sharedStreamData.led3.end[1] = '\r';
 
@@ -154,7 +154,7 @@ int main(void)
   sharedStreamData.btn0.sep1   = ',';
   sharedStreamData.btn0.upd    = HANDLER_ENABLE;
   sharedStreamData.btn0.sep2   = ',';
-  memset(sharedStreamData.btn0.data, '0', sizeof(sharedStreamData.btn0.data));
+  memcpy(sharedStreamData.btn0.data, (char*)HANDLER_OFF, sizeof(sharedStreamData.btn0.id));
   sharedStreamData.btn0.end[0] = '\n';
   sharedStreamData.btn0.end[1] = '\r';
 
@@ -162,7 +162,7 @@ int main(void)
   sharedStreamData.hld0.sep1   = ',';
   sharedStreamData.hld0.upd    = HANDLER_ENABLE;
   sharedStreamData.hld0.sep2   = ',';
-  memset(sharedStreamData.hld0.data, '0', sizeof(sharedStreamData.hld0.data));
+  memcpy(sharedStreamData.hld0.data, (char*)HANDLER_OFF, sizeof(sharedStreamData.hld0.id));
   sharedStreamData.hld0.end[0] = '\n';
   sharedStreamData.hld0.end[1] = '\r';
 

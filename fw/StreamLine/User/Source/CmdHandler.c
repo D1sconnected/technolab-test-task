@@ -1,24 +1,26 @@
 #include "CmdHandler.h"
 
-static int CmdHandler_ToogleLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t enable)
+static int CmdHandler_ToogleLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
 {
-    if (GPIOx == NULL)
+    if (GPIOx == NULL || pData == NULL)
     {
         return -1;
     }
 
     // Implemented due inverted logic on demo board
-    if (enable)
+    if (memcmp((char*)pData, (char*)HANDLER_ON, (size_t)STREAM_LED_DATA_LEN - 1) == 0)
     {
         HAL_GPIO_WritePin(GPIOx, GPIO_Pin, GPIO_PIN_RESET);
+        return 0;
     }
 
-    else
+    else if (memcmp((char*)pData, (char*)HANDLER_OFF, (size_t)STREAM_LED_DATA_LEN) == 0)
     {
         HAL_GPIO_WritePin(GPIOx, GPIO_Pin, GPIO_PIN_SET);
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
 
 int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
@@ -33,11 +35,11 @@ int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
     // Implemented due inverted logic on demo board
     if (state)
     {
-        *pData = '0';
+        memcpy(pData, (char*)HANDLER_OFF, STREAM_LED_DATA_LEN);
     }
     else
     {
-        *pData = '1';
+        memcpy(pData, (char*)HANDLER_ON, STREAM_LED_DATA_LEN);
     }
 
     return 0;
@@ -104,23 +106,18 @@ static void CmdHandler_SendAckToHost (uint8_t id, uint8_t number, uint8_t update
     HAL_UART_Transmit_IT(&huart2, (uint8_t*)&pTxAns, sizeof(pTxAns));
 }
 
-int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
+int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
 {
-    if (pData == NULL || size != RECORD_SIZE)
+    if (pCommand == NULL || size != RECORD_SIZE)
     {
         return -1;
     }
 
-    static uint8_t id     = 0;
-    static uint8_t number = 0;
-    static uint8_t update = 0;
-    static uint8_t value  = 0;
-
     // Parse command
-    id     = pData[HANDLER_ID_INDEX];
-    number = pData[HANDLER_NUMBER_INDEX];
-    update = pData[HANDLER_UPDATE_INDEX];
-    value = (uint8_t)atoi(&pData[HANDLER_DATA_INDEX]);
+    uint8_t id     = pCommand[HANDLER_ID_INDEX];
+    uint8_t number = pCommand[HANDLER_NUMBER_INDEX];
+    uint8_t update = pCommand[HANDLER_UPDATE_INDEX];
+    uint8_t *pData = &pCommand[HANDLER_DATA_INDEX];
 
     int status = -1;
 
@@ -156,7 +153,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                     status = CmdHandler_ControlDataOutput(&sharedStreamData.led0.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, value);
+                        CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, pData);
                     }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
@@ -168,7 +165,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                     status = CmdHandler_ControlDataOutput(&sharedStreamData.led1.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, value);
+                        CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, pData);
                     }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
@@ -180,7 +177,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                     status = CmdHandler_ControlDataOutput(&sharedStreamData.led2.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, value);
+                        CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, pData);
                     }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;
@@ -192,7 +189,7 @@ int CmdHandler_ParseCommand (uint8_t *pData, size_t size)
                     status = CmdHandler_ControlDataOutput(&sharedStreamData.led3.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, value);
+                        CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, pData);
                     }
                     CmdHandler_SendAckToHost(id, number, update, status);
                     return 0;

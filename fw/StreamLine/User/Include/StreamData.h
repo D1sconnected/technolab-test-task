@@ -11,6 +11,13 @@ uint8_t sep2  = ',';
 uint8_t data[depends on type]
 uint8_t end[2] = '\r' + '\n'
 */
+
+#define STREAM_ID_LEN       4
+#define STREAM_ADC_DATA_LEN 5
+#define STREAM_LED_DATA_LEN 3
+#define STREAM_TMP_DATA_LEN 10
+#define STREAM_THR_DATA_LEN 1024
+
 #pragma pack(push, 1)
 typedef struct
 {
@@ -18,7 +25,7 @@ typedef struct
     uint8_t  sep1;
     uint8_t  upd;
     uint8_t  sep2;
-    uint8_t  data[5];
+    uint8_t  data[STREAM_ADC_DATA_LEN];
     uint8_t  end[2];
 } adcData;
 #pragma pack(pop)
@@ -30,7 +37,7 @@ typedef struct
     uint8_t sep1;
     uint8_t upd;
     uint8_t sep2;
-    uint8_t data[3]; // 'ON\0' or 'OFF'
+    uint8_t data[STREAM_LED_DATA_LEN]; // 'ON\0' or 'OFF'
     uint8_t end[2];
 } gpioData;
 #pragma pack(pop)
@@ -42,7 +49,7 @@ typedef struct
     uint8_t sep1;
     uint8_t upd;
     uint8_t sep2;
-    uint8_t data[10]; // ToDo: increase
+    uint8_t data[STREAM_TMP_DATA_LEN]; // ToDo: increase
     uint8_t end[2];
 } tempData;
 #pragma pack(pop)
@@ -59,7 +66,7 @@ typedef struct
     gpioData  btn0;
     gpioData  hld0;
     tempData  tmp0;
-    uint8_t   thrd[1024];
+    uint8_t   thrd[STREAM_THR_DATA_LEN];
     uint8_t   end[50];
 } dataStruct;
 #pragma pack(pop)

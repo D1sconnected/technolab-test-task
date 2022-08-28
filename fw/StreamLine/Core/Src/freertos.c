@@ -201,7 +201,7 @@ void StartTask_StreamData(void const * argument)
       //sharedStreamData.btn0.data = 'OFF';
       //sharedStreamData.hld0.data = 'OFF';
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
-      osDelay(1000);
+      osDelay(10000);
   }
   /* USER CODE END StartTask_StreamData */
 }
