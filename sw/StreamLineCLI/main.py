@@ -52,9 +52,9 @@ def parse_stream(streamList):
 
         formated_string = item.replace(DATA_SEPARATOR, '')
         formated_string = formated_string.replace(DATA_CARRIAGE_RETURN, '')
-        key = formated_string[0:2]
-        temp.append(formated_string[2:3])
-        temp.append(formated_string[3:])
+        key = formated_string[0:4]
+        temp.append(formated_string[4:5])
+        temp.append(formated_string[5:])
         formated.update({key: temp.copy()})
         temp.clear()
 
@@ -63,9 +63,7 @@ def parse_stream(streamList):
 def send_control_output(key, data):
 
     output = []
-    output.append(key[0:1])
-    output.append(',')
-    output.append(key[1:2])
+    output.append(key)
     output.append(',')
 
     if data[0] == 'E':
@@ -83,17 +81,15 @@ def send_control_output(key, data):
 def send_control_state(key, data):
 
     output = []
-    output.append(key[0:1])
-    output.append(',')
-    output.append(key[1:2])
+    output.append(key)
     output.append(',')
     output.append(data[0])
     output.append(',')
 
-    if data[1] == '1':
-        output.append('0')
-    elif data[1] == '0':
-        output.append('1')
+    if data[1] == 'OFF':
+        output.append('ON')
+    elif data[1] == 'ON':
+        output.append('OFF')
     output.append('\r')
 
     s = ''.join(output)
@@ -196,31 +192,31 @@ def main(stdscr):
             pressed_key = stdscr.getch()
 
             if pressed_key == HINTS_ADC0_OUTPUT_KEY:
-                send_control_output('A0', data_dict.get('A0'))
+                send_control_output('ADC0', data_dict.get('ADC0'))
             if pressed_key == HINTS_ADC1_OUTPUT_KEY:
-                send_control_output('A1', data_dict.get('A1'))
+                send_control_output('ADC1', data_dict.get('ADC1'))
             if pressed_key == HINTS_LED0_OUTPUT_KEY:
-                send_control_output('L0', data_dict.get('L0'))
+                send_control_output('LED0', data_dict.get('LED0'))
             if pressed_key == HINTS_LED1_OUTPUT_KEY:
-                send_control_output('L1', data_dict.get('L1'))
+                send_control_output('LED1', data_dict.get('LED1'))
             if pressed_key == HINTS_LED2_OUTPUT_KEY:
-                send_control_output('L2', data_dict.get('L2'))
+                send_control_output('LED2', data_dict.get('LED2'))
             if pressed_key == HINTS_LED3_OUTPUT_KEY:
-                send_control_output('L3', data_dict.get('L3'))
+                send_control_output('LED3', data_dict.get('LED3'))
             if pressed_key == HINTS_BTN0_OUTPUT_KEY:
-                send_control_output('B0', data_dict.get('B0'))
+                send_control_output('BTN0', data_dict.get('BTN0'))
             if pressed_key == HINTS_HLD0_OUTPUT_KEY:
-                send_control_output('H0', data_dict.get('H0'))
+                send_control_output('HLD0', data_dict.get('HLD0'))
             if pressed_key == HINTS_TMP0_OUTPUT_KEY:
-                send_control_output('T0', data_dict.get('T0'))
+                send_control_output('TMP0', data_dict.get('TMP0'))
             if pressed_key == HINTS_LED0_STATE_KEY:
-                send_control_state('L0', data_dict.get('L0'))
+                send_control_state('LED0', data_dict.get('LED0'))
             if pressed_key == HINTS_LED1_STATE_KEY:
-                send_control_state('L1', data_dict.get('L1'))
+                send_control_state('LED1', data_dict.get('LED1'))
             if pressed_key == HINTS_LED2_STATE_KEY:
-                send_control_state('L2', data_dict.get('L2'))
+                send_control_state('LED2', data_dict.get('LED2'))
             if pressed_key == HINTS_LED3_STATE_KEY:
-                send_control_state('L3', data_dict.get('L3'))
+                send_control_state('LED3', data_dict.get('LED3'))
 
             if serialInst.in_waiting:
                 packet = serialInst.readline()
@@ -233,7 +229,7 @@ def main(stdscr):
                     data_dict.update(temp_dict)
                     data_window.clear()
                     for x in range(len(frame)):
-                        color_slice = (frame[x])[5:6]
+                        color_slice = (frame[x])[6:7]
                         if color_slice == 'E':
                             data_window.addstr(x, 0, str(frame[x]), GREEN_AND_BLACK)
                         elif color_slice == 'D':
