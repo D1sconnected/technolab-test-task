@@ -70,37 +70,27 @@ static int CmdHandler_ControlDataOutput (uint8_t *pUpdate, uint8_t update)
     return 0;
 }
 
-static void CmdHandler_SendAckToHost (uint8_t id, uint8_t number, uint8_t update, int status)
+static void CmdHandler_SendAckToHost (uint8_t *pId, uint8_t update, int status)
 {
-    memset(&pTxAns, '-', sizeof(pTxAns));
+    memset(pTxAns, '-', sizeof(pTxAns));
 
-    pTxAns[0] = id;
-    pTxAns[1] = ',';
-    pTxAns[2] = number;
-    pTxAns[3] = ',';
-    pTxAns[4] = update;
-    pTxAns[5] = ',';
+    memcpy(pTxAns, pId, STREAM_ID_LEN);
+    pTxAns[4] = ',';
+    pTxAns[5] = update;
+    pTxAns[6] = ',';
 
     if (status)
     {
-        pTxAns[6]  = 'E';
-        pTxAns[7]  = 'R';
-        pTxAns[8]  = 'R';
-        pTxAns[9]  = 'O';
-        pTxAns[10] = 'R';
+        memcpy(&pTxAns[7], (char*)HANDLER_ERROR, HANDLER_ACK_LEN);
     }
 
     else
     {
-        pTxAns[6]  = 'O';
-        pTxAns[7]  = 'K';
-        pTxAns[8]  = 0;
-        pTxAns[9]  = 0;
-        pTxAns[10] = 0;
+        memcpy(&pTxAns[7], (char*)HANDLER_OK, HANDLER_ACK_LEN);
     }
 
-    pTxAns[11] = '\r';
-    pTxAns[12] = '\n';
+    pTxAns[12] = '\r';
+    pTxAns[13] = '\n';
     pTxAns[61] = '\r';
     pTxAns[62] = '\n';
     HAL_UART_Transmit_IT(&huart2, (uint8_t*)&pTxAns, sizeof(pTxAns));
@@ -114,14 +104,14 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
     }
 
     // Parse command
-    uint8_t id     = pCommand[HANDLER_ID_INDEX];
+    uint8_t *pId   = &pCommand[HANDLER_ID_INDEX];
     uint8_t number = pCommand[HANDLER_NUMBER_INDEX];
     uint8_t update = pCommand[HANDLER_UPDATE_INDEX];
     uint8_t *pData = &pCommand[HANDLER_DATA_INDEX];
 
     int status = -1;
 
-    switch (id)
+    switch (pId[0])
     {
         case 'A':
         {
@@ -130,14 +120,14 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
                 case HANDLER_ADC_0:
                 {
                     status = CmdHandler_ControlDataOutput(&sharedStreamData.adc0.upd, update);
-                    CmdHandler_SendAckToHost(id, number, update, status);
+                    CmdHandler_SendAckToHost(pId, update, status);
                 }
                 break;
 
                 case HANDLER_ADC_1:
                 {
                     status = CmdHandler_ControlDataOutput(&sharedStreamData.adc1.upd, update);
-                    CmdHandler_SendAckToHost(id, number, update, status);
+                    CmdHandler_SendAckToHost(pId, update, status);
                 }
                 break;
             }
@@ -155,7 +145,7 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
                     {
                         CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(id, number, update, status);
+                    CmdHandler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
@@ -167,7 +157,7 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
                     {
                         CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(id, number, update, status);
+                    CmdHandler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
@@ -179,7 +169,7 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
                     {
                         CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(id, number, update, status);
+                    CmdHandler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
@@ -191,7 +181,7 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
                     {
                         CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(id, number, update, status);
+                    CmdHandler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
@@ -202,21 +192,21 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
         case 'T':
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.tmp0.upd, update);
-            CmdHandler_SendAckToHost(id, number, update, status);
+            CmdHandler_SendAckToHost(pId, update, status);
         }
         break;
 
         case 'B':
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.btn0.upd, update);
-            CmdHandler_SendAckToHost(id, number, update, status);
+            CmdHandler_SendAckToHost(pId, update, status);
         }
         break;
 
         case 'H':
         {
             status = CmdHandler_ControlDataOutput(&sharedStreamData.hld0.upd, update);
-            CmdHandler_SendAckToHost(id, number, update, status);
+            CmdHandler_SendAckToHost(pId, update, status);
         }
         break;
 

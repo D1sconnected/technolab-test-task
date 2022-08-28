@@ -16,6 +16,9 @@
 
 #define HANDLER_ON          "ON\0"
 #define HANDLER_OFF         "OFF"
+#define HANDLER_OK          "OK\0\0\0"
+#define HANDLER_ERROR       "ERROR"
+#define HANDLER_ACK_LEN     5
 
 // id defines
 #define HANDLER_ADC0        "ADC0"
