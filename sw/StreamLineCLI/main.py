@@ -1,16 +1,26 @@
-# This is a sample Python script.
+import serial.tools.list_ports
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+ports = serial.tools.list_ports.comports()
+serialInst = serial.Serial()
 
+portList = []
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+for onePort in ports:
+    portList.append(str(onePort))
+    print(str(onePort))
 
+val = input("Enter COM port number to connect: ")
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+for x in range(0,len(portList)):
+    if portList[x].startswith("COM" + str(val)):
+        portVar = "COM" + str(val)
+        print(portList[x])
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+serialInst.baudrate = 115200
+serialInst.port = portVar
+serialInst.open()
+
+while True:
+    if serialInst.in_waiting:
+        packet = serialInst.readline()
+        print(packet.decode('utf').rstrip('\n'))
