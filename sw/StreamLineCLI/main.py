@@ -71,7 +71,7 @@ def send_control_output(key, data):
     else:
         output.append('E')
     output.append(',')
-    output.append(data[1])
+    output.append('\0')
     output.append('\r')
 
     s = ''.join(output)
