@@ -1,9 +1,10 @@
-#ifndef __CMDHANDLER_H
-#define __CMDHANDLER_H
+#ifndef __HANDLER_H
+#define __HANDLER_H
 
 #include "main.h"
 #include "usart.h"
 #include <stdio.h>
+#include <string.h>
 
 // format defines
 #define HANDLER_ID_INDEX     0
@@ -47,6 +48,6 @@
 #define HANDLER_TEMP_0      '0'
 
 int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData); // ToDo: rename/refactor
-int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size);
+int Handler_ParseCommand (uint8_t *pCommand, size_t size);
 
 #endif

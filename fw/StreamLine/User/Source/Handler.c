@@ -1,6 +1,6 @@
-#include "CmdHandler.h"
+#include "Handler.h"
 
-static int CmdHandler_ToogleLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
+static int Handler_ToogleLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
 {
     if (GPIOx == NULL || pData == NULL)
     {
@@ -45,7 +45,7 @@ int Handler_ReadLed(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *pData)
     return 0;
 }
 
-static int CmdHandler_ControlDataOutput (uint8_t *pUpdate, uint8_t update)
+static int Handler_ControlDataOutput (uint8_t *pUpdate, uint8_t update)
 {
     if (pUpdate == NULL || (update != HANDLER_ENABLE && update != HANDLER_DISABLE))
     {
@@ -70,7 +70,7 @@ static int CmdHandler_ControlDataOutput (uint8_t *pUpdate, uint8_t update)
     return 0;
 }
 
-static void CmdHandler_SendAckToHost (uint8_t *pId, uint8_t update, int status)
+static void Handler_SendAckToHost (uint8_t *pId, uint8_t update, int status)
 {
     memset(pTxAns, '-', sizeof(pTxAns));
 
@@ -96,7 +96,7 @@ static void CmdHandler_SendAckToHost (uint8_t *pId, uint8_t update, int status)
     HAL_UART_Transmit_IT(&huart2, (uint8_t*)&pTxAns, sizeof(pTxAns));
 }
 
-int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
+int Handler_ParseCommand (uint8_t *pCommand, size_t size)
 {
     if (pCommand == NULL || size != RECORD_SIZE)
     {
@@ -119,15 +119,15 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
             {
                 case HANDLER_ADC_0:
                 {
-                    status = CmdHandler_ControlDataOutput(&sharedStreamData.adc0.upd, update);
-                    CmdHandler_SendAckToHost(pId, update, status);
+                    status = Handler_ControlDataOutput(&sharedStreamData.adc0.upd, update);
+                    Handler_SendAckToHost(pId, update, status);
                 }
                 break;
 
                 case HANDLER_ADC_1:
                 {
-                    status = CmdHandler_ControlDataOutput(&sharedStreamData.adc1.upd, update);
-                    CmdHandler_SendAckToHost(pId, update, status);
+                    status = Handler_ControlDataOutput(&sharedStreamData.adc1.upd, update);
+                    Handler_SendAckToHost(pId, update, status);
                 }
                 break;
             }
@@ -140,48 +140,48 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
             {
                 case HANDLER_LED_BLUE:
                 {
-                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led0.upd, update);
+                    status = Handler_ControlDataOutput(&sharedStreamData.led0.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, pData);
+                        Handler_ToogleLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(pId, update, status);
+                    Handler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
 
                 case HANDLER_LED_RED:
                 {
-                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led1.upd, update);
+                    status = Handler_ControlDataOutput(&sharedStreamData.led1.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, pData);
+                        Handler_ToogleLed(LED_RED_GPIO_Port, LED_RED_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(pId, update, status);
+                    Handler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
 
                 case HANDLER_LED_ORANGE:
                 {
-                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led2.upd, update);
+                    status = Handler_ControlDataOutput(&sharedStreamData.led2.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, pData);
+                        Handler_ToogleLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(pId, update, status);
+                    Handler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
 
                 case HANDLER_LED_GREEN:
                 {
-                    status = CmdHandler_ControlDataOutput(&sharedStreamData.led3.upd, update);
+                    status = Handler_ControlDataOutput(&sharedStreamData.led3.upd, update);
                     if (!status)
                     {
-                        CmdHandler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, pData);
+                        Handler_ToogleLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, pData);
                     }
-                    CmdHandler_SendAckToHost(pId, update, status);
+                    Handler_SendAckToHost(pId, update, status);
                     return 0;
                 }
                 break;
@@ -191,22 +191,22 @@ int CmdHandler_ParseCommand (uint8_t *pCommand, size_t size)
 
         case 'T':
         {
-            status = CmdHandler_ControlDataOutput(&sharedStreamData.tmp0.upd, update);
-            CmdHandler_SendAckToHost(pId, update, status);
+            status = Handler_ControlDataOutput(&sharedStreamData.tmp0.upd, update);
+            Handler_SendAckToHost(pId, update, status);
         }
         break;
 
         case 'B':
         {
-            status = CmdHandler_ControlDataOutput(&sharedStreamData.btn0.upd, update);
-            CmdHandler_SendAckToHost(pId, update, status);
+            status = Handler_ControlDataOutput(&sharedStreamData.btn0.upd, update);
+            Handler_SendAckToHost(pId, update, status);
         }
         break;
 
         case 'H':
         {
-            status = CmdHandler_ControlDataOutput(&sharedStreamData.hld0.upd, update);
-            CmdHandler_SendAckToHost(pId, update, status);
+            status = Handler_ControlDataOutput(&sharedStreamData.hld0.upd, update);
+            Handler_SendAckToHost(pId, update, status);
         }
         break;
 

@@ -34,7 +34,7 @@ extern "C" {
 #include <stdbool.h>
 #include "FreeRTOS.h"
 #include "./../../User/Include/CircularBuffer.h"
-#include "./../../User/Include/CmdHandler.h"
+#include "./../../User/Include/Handler.h"
 #include "./../../User/Include/StreamData.h"
 /* USER CODE END Includes */
 
@@ -53,6 +53,7 @@ extern volatile CircularBuffer pCirBuf;
 extern volatile char pTxAns[63];
 extern volatile dataStruct sharedStreamData;
 extern volatile dataStruct txStream;
+extern volatile uint32_t adcVals[3];
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

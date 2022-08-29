@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -40,6 +41,7 @@ volatile CircularBuffer pCirBuf;
 volatile char pTxAns[63] = {0}; // 13 for data & 50 for footer
 volatile dataStruct     sharedStreamData = {0};
 volatile dataStruct     txStream = {0};
+volatile uint32_t adcVals[3] = {0};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -93,6 +95,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM10_Init();
@@ -100,6 +103,7 @@ int main(void)
 
   pCirBuf  = CircularBuffer_Create(RECORD_COUNT, RECORD_SIZE);
   HAL_UART_Receive_IT (&huart2, &gTermByte, sizeof(uint8_t));
+  HAL_ADC_Start_DMA(&hadc1,adcVals,3);
 
   // Init dataStruct
   memcpy(sharedStreamData.adc0.id, (char*)HANDLER_ADC0, sizeof(sharedStreamData.adc0.id));
