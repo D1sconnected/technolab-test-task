@@ -4,7 +4,7 @@
 typedef unsigned char byte;
 
 #define RECORD_COUNT 10
-#define RECORD_SIZE  8 // "A,0,E,0\r"
+#define RECORD_SIZE  11 // "ADC0,E,OFF\r"
 
 #include <stdbool.h>
 

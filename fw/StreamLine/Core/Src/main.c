@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -40,6 +41,7 @@ volatile CircularBuffer pCirBuf;
 volatile char pTxAns[63] = {0}; // 13 for data & 50 for footer
 volatile dataStruct     sharedStreamData = {0};
 volatile dataStruct     txStream = {0};
+volatile uint32_t adcVals[3] = {0};
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -93,6 +95,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM10_Init();
@@ -100,95 +103,78 @@ int main(void)
 
   pCirBuf  = CircularBuffer_Create(RECORD_COUNT, RECORD_SIZE);
   HAL_UART_Receive_IT (&huart2, &gTermByte, sizeof(uint8_t));
+  HAL_ADC_Start_DMA(&hadc1,adcVals,3);
 
   // Init dataStruct
-  sharedStreamData.adc0.id      = HANDLER_ADC;
+  memcpy(sharedStreamData.adc0.id, (char*)HANDLER_ADC0, sizeof(sharedStreamData.adc0.id));
   sharedStreamData.adc0.sep1    = ',';
-  sharedStreamData.adc0.number  = HANDLER_ADC_0;
-  sharedStreamData.adc0.sep2    = ',';
   sharedStreamData.adc0.upd     = HANDLER_ENABLE;
-  sharedStreamData.adc0.sep3    = ',';
-  sharedStreamData.adc0.data[0] = '0';
+  sharedStreamData.adc0.sep2    = ',';
+  memset(sharedStreamData.adc0.data, '0', sizeof(sharedStreamData.adc0.data));
   sharedStreamData.adc0.end[0]  = '\n';
   sharedStreamData.adc0.end[1]  = '\r';
 
-  sharedStreamData.adc1.id      = HANDLER_ADC;
+  memcpy(sharedStreamData.adc1.id, (char*)HANDLER_ADC1, sizeof(sharedStreamData.adc1.id));
   sharedStreamData.adc1.sep1    = ',';
-  sharedStreamData.adc1.number  = HANDLER_ADC_1;
-  sharedStreamData.adc1.sep2    = ',';
   sharedStreamData.adc1.upd     = HANDLER_ENABLE;
-  sharedStreamData.adc1.sep3    = ',';
-  sharedStreamData.adc1.data[0] = '0';
+  sharedStreamData.adc1.sep2    = ',';
+  memset(sharedStreamData.adc1.data, '0', sizeof(sharedStreamData.adc1.data));
   sharedStreamData.adc1.end[0]  = '\n';
   sharedStreamData.adc1.end[1]  = '\r';
 
-  sharedStreamData.led0.id     = HANDLER_LED;
+  memcpy(sharedStreamData.led0.id, (char*)HANDLER_LED0, sizeof(sharedStreamData.led0.id));
   sharedStreamData.led0.sep1   = ',';
-  sharedStreamData.led0.number = HANDLER_LED_BLUE;
-  sharedStreamData.led0.sep2   = ',';
   sharedStreamData.led0.upd    = HANDLER_ENABLE;
-  sharedStreamData.led0.sep3   = ',';
-  sharedStreamData.led0.data   = '0';
+  sharedStreamData.led0.sep2   = ',';
+  memcpy(sharedStreamData.led0.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led0.data));
   sharedStreamData.led0.end[0] = '\n';
   sharedStreamData.led0.end[1] = '\r';
 
-  sharedStreamData.led1.id     = HANDLER_LED;
+  memcpy(sharedStreamData.led1.id, (char*)HANDLER_LED1, sizeof(sharedStreamData.led1.id));
   sharedStreamData.led1.sep1   = ',';
-  sharedStreamData.led1.number = HANDLER_LED_RED;
-  sharedStreamData.led1.sep2   = ',';
   sharedStreamData.led1.upd    = HANDLER_ENABLE;
-  sharedStreamData.led1.sep3   = ',';
-  sharedStreamData.led1.data   = '0';
+  sharedStreamData.led1.sep2   = ',';
+  memcpy(sharedStreamData.led1.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led1.data));
   sharedStreamData.led1.end[0] = '\n';
   sharedStreamData.led1.end[1] = '\r';
 
-  sharedStreamData.led2.id     = HANDLER_LED;
+  memcpy(sharedStreamData.led2.id, (char*)HANDLER_LED2, sizeof(sharedStreamData.led2.id));
   sharedStreamData.led2.sep1   = ',';
-  sharedStreamData.led2.number = HANDLER_LED_ORANGE;
-  sharedStreamData.led2.sep2   = ',';
   sharedStreamData.led2.upd    = HANDLER_ENABLE;
-  sharedStreamData.led2.sep3   = ',';
-  sharedStreamData.led2.data   = '0';
+  sharedStreamData.led2.sep2   = ',';
+  memcpy(sharedStreamData.led2.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led2.data));
   sharedStreamData.led2.end[0] = '\n';
   sharedStreamData.led2.end[1] = '\r';
 
-  sharedStreamData.led3.id     = HANDLER_LED;
+  memcpy(sharedStreamData.led3.id, (char*)HANDLER_LED3, sizeof(sharedStreamData.led3.id));
   sharedStreamData.led3.sep1   = ',';
-  sharedStreamData.led3.number = HANDLER_LED_GREEN;
-  sharedStreamData.led3.sep2   = ',';
   sharedStreamData.led3.upd    = HANDLER_ENABLE;
-  sharedStreamData.led3.sep3   = ',';
-  sharedStreamData.led3.data   = '0';
+  sharedStreamData.led3.sep2   = ',';
+  memcpy(sharedStreamData.led3.data, (char*)HANDLER_ON, sizeof(sharedStreamData.led3.data));
   sharedStreamData.led3.end[0] = '\n';
   sharedStreamData.led3.end[1] = '\r';
 
-  sharedStreamData.btn0.id     = HANDLER_BTN;
+  memcpy(sharedStreamData.btn0.id, (char*)HANDLER_BTN0, sizeof(sharedStreamData.btn0.id));
   sharedStreamData.btn0.sep1   = ',';
-  sharedStreamData.btn0.number = HANDLER_JOY_UP;
-  sharedStreamData.btn0.sep2   = ',';
   sharedStreamData.btn0.upd    = HANDLER_ENABLE;
-  sharedStreamData.btn0.sep3   = ',';
-  sharedStreamData.btn0.data   = '0';
+  sharedStreamData.btn0.sep2   = ',';
+  memcpy(sharedStreamData.btn0.data, (char*)HANDLER_OFF, sizeof(sharedStreamData.btn0.data));
   sharedStreamData.btn0.end[0] = '\n';
   sharedStreamData.btn0.end[1] = '\r';
 
-  sharedStreamData.hld0.id     = HANDLER_HOLD;
+  memcpy(sharedStreamData.hld0.id, (char*)HANDLER_HLD0, sizeof(sharedStreamData.hld0.id));
   sharedStreamData.hld0.sep1   = ',';
-  sharedStreamData.hld0.number = HANDLER_JOY_UP_HOLD;
-  sharedStreamData.hld0.sep2   = ',';
   sharedStreamData.hld0.upd    = HANDLER_ENABLE;
-  sharedStreamData.hld0.sep3   = ',';
-  sharedStreamData.hld0.data   = '0';
+  sharedStreamData.hld0.sep2   = ',';
+  memcpy(sharedStreamData.hld0.data, (char*)HANDLER_OFF, sizeof(sharedStreamData.hld0.data));
   sharedStreamData.hld0.end[0] = '\n';
   sharedStreamData.hld0.end[1] = '\r';
 
-  sharedStreamData.tmp0.id      = HANDLER_TEMPERATURE;
+  memcpy(sharedStreamData.tmp0.id, (char*)HANDLER_TMP0, sizeof(sharedStreamData.tmp0.data));
   sharedStreamData.tmp0.sep1    = ',';
-  sharedStreamData.tmp0.number  = HANDLER_TEMP_0;
-  sharedStreamData.tmp0.sep2    = ',';
   sharedStreamData.tmp0.upd     = HANDLER_ENABLE;
-  sharedStreamData.tmp0.sep3    = ',';
-  sharedStreamData.tmp0.data[0] = '0';
+  sharedStreamData.tmp0.sep2    = ',';
+  memset(sharedStreamData.tmp0.data, '0', sizeof(sharedStreamData.tmp0.data));
   sharedStreamData.tmp0.end[0]  = '\n';
   sharedStreamData.tmp0.end[1]  = '\r';
 

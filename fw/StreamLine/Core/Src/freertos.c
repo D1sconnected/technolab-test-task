@@ -176,7 +176,7 @@ void StartTask_CmdHandler(void const * argument)
       // If exist -> parse command -> enable/disable stuff
       if (status)
       {
-          CmdHandler_ParseCommand(pTemp, sizeof(pTemp));
+          Handler_ParseCommand(pTemp, sizeof(pTemp));
       }
       osDelay(1000);
   }
@@ -198,8 +198,8 @@ void StartTask_StreamData(void const * argument)
   {
       vTaskList(sharedStreamData.thrd);
       memcpy((uint8_t*)&txStream, (uint8_t*)&sharedStreamData, sizeof(txStream));
-      sharedStreamData.btn0.data = '0';
-      sharedStreamData.hld0.data = '0';
+      memcpy(sharedStreamData.btn0.data, (char*)HANDLER_OFF, sizeof(sharedStreamData.btn0.data));
+      memcpy(sharedStreamData.hld0.data, (char*)HANDLER_OFF, sizeof(sharedStreamData.hld0.data));
       HAL_UART_Transmit_IT(&huart2, (uint8_t*)&txStream, sizeof(txStream));
       osDelay(1000);
   }
@@ -219,30 +219,24 @@ void StartTask_ReadGpio(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-//      uint8_t temp[4] = {0};
-//      temp[0] = sharedStreamData.led0.upd;
-//      temp[1] = sharedStreamData.led1.upd;
-//      temp[2] = sharedStreamData.led2.upd;
-//      temp[3] = sharedStreamData.led3.upd;
-
       if (sharedStreamData.led0.upd == HANDLER_ENABLE)
       {
-          Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, &sharedStreamData.led0.data);
+          Handler_ReadLed(LED_BLUE_GPIO_Port, LED_BLUE_Pin, sharedStreamData.led0.data);
       }
 
       if (sharedStreamData.led1.upd == HANDLER_ENABLE)
       {
-          Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, &sharedStreamData.led1.data);
+          Handler_ReadLed(LED_RED_GPIO_Port, LED_RED_Pin, sharedStreamData.led1.data);
       }
 
       if (sharedStreamData.led2.upd == HANDLER_ENABLE)
       {
-          Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, &sharedStreamData.led2.data);
+          Handler_ReadLed(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, sharedStreamData.led2.data);
       }
 
       if (sharedStreamData.led3.upd == HANDLER_ENABLE)
       {
-          Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, &sharedStreamData.led3.data);
+          Handler_ReadLed(LED_GREEN_GPIO_Port, LED_GREEN_Pin, sharedStreamData.led3.data);
       }
 
       osDelay(100);
@@ -263,35 +257,13 @@ void StartTask_ReadTemp(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      uint16_t readValue[3] = {0};
       float tCelsius = 0;
       char temp0[10] = {0};
       char temp1[5]  = {0};
       char temp2[5]  = {0};
 
-//      uint8_t upd[3] = {0};
-//      upd[0] = sharedStreamData.tmp0.upd;
-//      upd[1] = sharedStreamData.adc0.upd;
-//      upd[2] = sharedStreamData.adc1.upd;
-
-      // Get data from 3 ADC
-      HAL_ADC_Start(&hadc1);
-      HAL_ADC_PollForConversion(&hadc1,100);
-      readValue[0] = HAL_ADC_GetValue(&hadc1);
-      HAL_ADC_Stop(&hadc1);
-
-      HAL_ADC_Start(&hadc1);
-      HAL_ADC_PollForConversion(&hadc1,100);
-      readValue[1] = HAL_ADC_GetValue(&hadc1);
-      HAL_ADC_Stop(&hadc1);
-
-      HAL_ADC_Start(&hadc1);
-      HAL_ADC_PollForConversion(&hadc1,100);
-      readValue[2] = HAL_ADC_GetValue(&hadc1);
-      HAL_ADC_Stop(&hadc1);
-
       // Calculate temp
-      tCelsius = ((VSENSE*readValue[0] - V25) / AVG_SLOPE) + 25;
+      tCelsius = ((VSENSE*(uint16_t)adcVals[0] - V25) / AVG_SLOPE) + 25;
 
       if (sharedStreamData.tmp0.upd == HANDLER_ENABLE)
       {
@@ -301,16 +273,16 @@ void StartTask_ReadTemp(void const * argument)
 
       if (sharedStreamData.adc0.upd == HANDLER_ENABLE)
       {
-          snprintf(temp1, sizeof(temp1), "%d", readValue[1]);
+          snprintf(temp1, sizeof(temp1), "%d", (uint16_t)adcVals[1]);
           memcpy(&sharedStreamData.adc0.data[0], &temp1, sizeof(temp1));
       }
 
       if (sharedStreamData.adc1.upd == HANDLER_ENABLE)
       {
-          snprintf(temp2, sizeof(temp2), "%d", readValue[2]);
+          snprintf(temp2, sizeof(temp2), "%d", (uint16_t)adcVals[2]);
           memcpy(&sharedStreamData.adc1.data[0], &temp2, sizeof(temp2));
       }
-
+      HAL_ADC_Start_DMA(&hadc1,adcVals,3);
       osDelay(500);
   }
   /* USER CODE END StartTask_ReadTemp */
