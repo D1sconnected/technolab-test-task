@@ -12,4 +12,4 @@
 ## Внешний вид CLI
 |Консольное приложение StreamLineCLI|
 |---|
-|./media/cli.jpg|
+|![cli.jpg](./media/cli.jpg)|
